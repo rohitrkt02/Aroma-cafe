@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Track Your Booking — Aroma &amp; Co.</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--espresso:#2c1a0e;--coffee:#6b3f1f;--caramel:#c8833a;--gold:#d4a853;--cream:#f5f0e8;--warm:#faf8f4;--latte:#d4b896;--dark:#1a0f07;--sage:#7a8c6e;--red:#c4603a;--green:#4caf7d}
+  body{font-family:"DM Sans",sans-serif;background:var(--dark);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:40px 20px;position:relative;overflow-x:hidden}
+
+  /* animated background */
+  .bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .bg-circle{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(200,131,58,.07),transparent 70%)}
+  .bg-circle:nth-child(1){width:600px;height:600px;top:-200px;right:-200px}
+  .bg-circle:nth-child(2){width:500px;height:500px;bottom:-150px;left:-150px}
+  .bg-circle:nth-child(3){width:300px;height:300px;top:50%;left:50%;transform:translate(-50%,-50%)}
+
+  .wrap{position:relative;z-index:1;width:100%;max-width:520px}
+
+  /* header */
+  .brand{text-align:center;margin-bottom:40px}
+  .brand a{font-family:"Playfair Display",serif;font-size:2rem;font-weight:900;color:var(--cream);letter-spacing:-.02em;text-decoration:none}
+  .brand a span{color:var(--caramel);font-style:italic}
+  .brand p{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(245,240,232,.35);margin-top:6px}
+
+  /* search card */
+  .search-card{background:rgba(245,240,232,.04);border:1px solid rgba(212,184,150,.12);backdrop-filter:blur(20px);border-radius:16px;padding:40px 36px}
+  .search-card h1{font-family:"Playfair Display",serif;font-size:1.7rem;font-weight:700;color:var(--cream);margin-bottom:8px}
+  .search-card p.sub{font-size:.84rem;color:rgba(245,240,232,.45);margin-bottom:28px;line-height:1.6}
+
+  .input-row{display:flex;gap:10px}
+  .ref-input{flex:1;padding:14px 18px;background:rgba(245,240,232,.06);border:1.5px solid rgba(212,184,150,.2);border-radius:10px;color:var(--cream);font-family:"DM Sans",sans-serif;font-size:.95rem;outline:none;transition:border-color .3s,background .3s;letter-spacing:.08em;text-transform:uppercase}
+  .ref-input:focus{border-color:var(--caramel);background:rgba(200,131,58,.06)}
+  .ref-input::placeholder{text-transform:none;letter-spacing:0;color:rgba(245,240,232,.25);font-size:.85rem}
+  .track-btn{padding:14px 24px;background:var(--caramel);color:var(--cream);border:none;border-radius:10px;font-family:"DM Sans",sans-serif;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:background .3s,transform .15s;white-space:nowrap}
+  .track-btn:hover{background:var(--gold)}
+  .track-btn:active{transform:scale(.97)}
+  .track-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+  .hint{font-size:.74rem;color:rgba(245,240,232,.3);margin-top:10px}
+  .hint strong{color:var(--latte)}
+
+  /* loading */
+  .loading{display:none;text-align:center;padding:32px 0}
+  .loader{display:inline-block;width:40px;height:40px;border:3px solid rgba(200,131,58,.2);border-top-color:var(--caramel);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading p{font-size:.82rem;color:rgba(245,240,232,.4)}
+
+  /* error */
+  .error-box{display:none;background:rgba(196,96,58,.12);border:1px solid rgba(196,96,58,.35);border-radius:10px;padding:16px 20px;margin-top:20px;font-size:.84rem;color:#f4a68a;display:none;align-items:flex-start;gap:10px;line-height:1.6}
+  .error-box.show{display:flex}
+
+  /* result card */
+  .result-card{display:none;margin-top:24px;background:rgba(245,240,232,.04);border:1px solid rgba(212,184,150,.15);border-radius:14px;overflow:hidden}
+  .result-card.show{display:block}
+
+  .result-header{padding:20px 24px;background:rgba(200,131,58,.1);border-bottom:1px solid rgba(212,184,150,.12);display:flex;justify-content:space-between;align-items:center}
+  .result-ref{font-family:monospace;font-size:1.1rem;font-weight:700;color:var(--gold);letter-spacing:.1em}
+  .status-badge{padding:6px 16px;border-radius:20px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+  .status-badge.confirmed{background:rgba(76,175,125,.15);color:#4caf7d;border:1px solid rgba(76,175,125,.3)}
+  .status-badge.cancelled{background:rgba(196,96,58,.15);color:#f4a68a;border:1px solid rgba(196,96,58,.3)}
+  .status-badge.pending{background:rgba(212,168,83,.12);color:var(--gold);border:1px solid rgba(212,168,83,.3)}
+
+  .result-body{padding:24px}
+
+  /* timeline */
+  .timeline{margin-bottom:24px}
+  .tl-title{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(245,240,232,.35);margin-bottom:16px}
+  .tl-steps{display:flex;gap:0;position:relative}
+  .tl-steps::before{content:"";position:absolute;top:14px;left:14px;right:14px;height:2px;background:rgba(212,184,150,.15);z-index:0}
+  .tl-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;z-index:1}
+  .tl-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;border:2px solid rgba(212,184,150,.2);background:var(--dark);transition:all .4s}
+  .tl-dot.done{background:var(--green);border-color:var(--green);color:#fff}
+  .tl-dot.active{background:var(--caramel);border-color:var(--caramel);color:#fff;box-shadow:0 0 0 4px rgba(200,131,58,.2)}
+  .tl-dot.cancelled-dot{background:var(--red);border-color:var(--red);color:#fff}
+  .tl-step-label{font-size:.65rem;color:rgba(245,240,232,.35);text-align:center;letter-spacing:.04em}
+  .tl-step-label.active{color:var(--caramel);font-weight:600}
+  .tl-step-label.done{color:var(--green)}
+
+  /* detail rows */
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+  .detail-item{background:rgba(245,240,232,.04);border:1px solid rgba(212,184,150,.1);border-radius:10px;padding:14px 16px}
+  .detail-item .d-label{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,240,232,.35);margin-bottom:6px}
+  .detail-item .d-val{font-size:.95rem;font-weight:600;color:var(--cream)}
+  .detail-item .d-icon{font-size:1.2rem;margin-bottom:6px}
+  .detail-item.full{grid-column:1/-1}
+
+  /* special note */
+  .special-note{background:rgba(212,168,83,.06);border:1px solid rgba(212,168,83,.2);border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:.83rem;color:var(--gold);display:flex;align-items:flex-start;gap:8px;line-height:1.6}
+
+  /* help section */
+  .help-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px;padding-top:20px;border-top:1px solid rgba(212,184,150,.1)}
+  .help-chip{padding:8px 16px;border:1px solid rgba(212,184,150,.15);border-radius:20px;font-size:.75rem;color:rgba(245,240,232,.45);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all .2s}
+  .help-chip:hover{border-color:var(--caramel);color:var(--cream)}
+
+  /* back link */
+  .back-link{display:block;text-align:center;margin-top:24px;font-size:.78rem;color:rgba(245,240,232,.3);transition:color .2s;text-decoration:none}
+  .back-link:hover{color:var(--latte)}
+
+  /* recent searches */
+  .recent{margin-top:20px;display:none}
+  .recent.show{display:block}
+  .recent-title{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(245,240,232,.25);margin-bottom:10px}
+  .recent-chips{display:flex;gap:8px;flex-wrap:wrap}
+  .recent-chip{padding:6px 14px;background:rgba(245,240,232,.04);border:1px solid rgba(212,184,150,.12);border-radius:20px;font-size:.74rem;color:rgba(245,240,232,.4);cursor:pointer;font-family:monospace;letter-spacing:.08em;transition:all .2s}
+  .recent-chip:hover{border-color:var(--caramel);color:var(--cream)}
+</style>
+</head>
+<body>
+<div class="bg"><div class="bg-circle"></div><div class="bg-circle"></div><div class="bg-circle"></div></div>
+
+<div class="wrap">
+  <!-- Brand -->
+  <div class="brand">
+    <a href="/">Aroma<span>&amp;Co.</span></a>
+    <p>Booking Tracker &middot; Lucknow</p>
+  </div>
+
+  <!-- Search Card -->
+  <div class="search-card">
+    <h1>Track Your Booking</h1>
+    <p class="sub">Enter your booking reference number to see the status, date, time, and all details of your reservation.</p>
+
+    <div class="input-row">
+      <input type="text" id="refInput" class="ref-input" placeholder="e.g.  ARM-1234"
+             maxlength="10" oninput="onRefInput()" onkeypress="if(event.key==='Enter')trackBooking()">
+      <button class="track-btn" id="trackBtn" onclick="trackBooking()">Track &rarr;</button>
+    </div>
+    <p class="hint">Your reference was shown after booking and sent via email. Format: <strong>ARM-XXXX</strong></p>
+
+    <!-- Recent Searches -->
+    <div class="recent" id="recentWrap">
+      <div class="recent-title">Recent searches</div>
+      <div class="recent-chips" id="recentChips"></div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" id="loading">
+    <div class="loader"></div>
+    <p>Looking up your booking&#x2026;</p>
+  </div>
+
+  <!-- Error -->
+  <div class="error-box" id="errorBox">
+    <span>&#x26A0;&#xFE0F;</span>
+    <div id="errorMsg">No booking found.</div>
+  </div>
+
+  <!-- Result Card -->
+  <div class="result-card" id="resultCard">
+    <div class="result-header">
+      <div class="result-ref" id="resRef">ARM-0000</div>
+      <div class="status-badge" id="resBadge">Confirmed</div>
+    </div>
+    <div class="result-body">
+
+      <!-- Timeline -->
+      <div class="timeline">
+        <div class="tl-title">Booking Status</div>
+        <div class="tl-steps" id="tlSteps">
+          <div class="tl-step">
+            <div class="tl-dot done" id="tl1">&#x2713;</div>
+            <div class="tl-step-label done">Received</div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-dot" id="tl2">&#x1F4CB;</div>
+            <div class="tl-step-label" id="tl2l">Confirmed</div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-dot" id="tl3">&#x1F37D;</div>
+            <div class="tl-step-label" id="tl3l">Upcoming</div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-dot" id="tl4">&#x2714;</div>
+            <div class="tl-step-label" id="tl4l">Seated</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detail Grid -->
+      <div class="detail-grid" id="detailGrid"></div>
+
+      <!-- Special Requests -->
+      <div class="special-note" id="specialNote" style="display:none">
+        <span>&#x2728;</span>
+        <div id="specialText"></div>
+      </div>
+
+      <!-- Help Row -->
+      <div class="help-row">
+        <a href="/" class="help-chip">&#x1F3E0; Back to Café</a>
+        <a href="tel:+919876543210" class="help-chip">&#x1F4DE; Call Us</a>
+        <span class="help-chip" onclick="trackAnother()" style="cursor:pointer">&#x1F50D; Track Another</span>
+      </div>
+    </div>
+  </div>
+
+  <a href="/" class="back-link">&larr; Aroma &amp; Co. Website</a>
+</div>
+
+<script>
+var RECENT_KEY = 'aroma_recent_refs';
+
+/* ── AUTO-FORMAT INPUT ── */
+function onRefInput() {
+    var el = document.getElementById('refInput');
+    var v  = el.value.toUpperCase().replace(/[^A-Z0-9-]/g,'');
+    if (v.length > 3 && !v.startsWith('ARM-')) {
+        v = 'ARM-' + v.replace('ARM','').replace('-','');
+    }
+    el.value = v;
+    // hide previous results when typing
+    document.getElementById('errorBox').classList.remove('show');
+    document.getElementById('resultCard').classList.remove('show');
+}
+
+/* ── TRACK ── */
+async function trackBooking() {
+    var raw = document.getElementById('refInput').value.trim().toUpperCase();
+    if (!raw || raw.length < 4) { showError('Please enter a valid reference (e.g. ARM-1234).'); return; }
+
+    // normalise: add ARM- if user just typed digits
+    var ref = raw;
+    if (/^\d{4}$/.test(ref)) ref = 'ARM-' + ref;
+    if (!/^ARM-\d{4}$/.test(ref)) { showError('Format should be ARM-XXXX (e.g. ARM-4821).'); return; }
+
+    setLoading(true);
+    try {
+        var r   = await fetch('/api/track/' + ref);
+        var d   = await r.json();
+        setLoading(false);
+        if (!d.success) { showError(d.message || 'Booking not found.'); return; }
+        showResult(d.booking);
+        saveRecent(ref);
+    } catch(e) {
+        setLoading(false);
+        showError('Could not reach server. Please try again or call +91 98765 43210.');
+    }
+}
+
+function setLoading(on) {
+    document.getElementById('loading').style.display = on ? 'block' : 'none';
+    document.getElementById('trackBtn').disabled = on;
+    if (on) {
+        document.getElementById('errorBox').classList.remove('show');
+        document.getElementById('resultCard').classList.remove('show');
+    }
+}
+
+function showError(msg) {
+    document.getElementById('errorMsg').textContent = msg;
+    document.getElementById('errorBox').classList.add('show');
+    document.getElementById('resultCard').classList.remove('show');
+}
+
+/* ── RENDER RESULT ── */
+function showResult(b) {
+    var status = (b.status || 'Confirmed');
+
+    // Header
+    document.getElementById('resRef').textContent = b.ref;
+    var badge = document.getElementById('resBadge');
+    badge.textContent = status;
+    badge.className   = 'status-badge ' + status.toLowerCase();
+
+    // Timeline
+    updateTimeline(status, b.date);
+
+    // Details
+    var today = new Date().toISOString().split('T')[0];
+    var isPast = b.date < today;
+    var items = [
+        { icon:'&#x1F4C5;', label:'Date',          val: formatDate(b.date) },
+        { icon:'&#x1F550;', label:'Time',          val: b.time },
+        { icon:'&#x1F465;', label:'Guests',        val: b.guests + ' person' + (parseInt(b.guests)>1?'s':'') },
+        { icon:'&#x1F4CB;', label:'Booked On',     val: formatDate((b.created_at||'').split(' ')[0]) },
+        { icon:'&#x1F4CD;', label:'Venue',         val: '12-A Hazratganj, Lucknow', full: true },
+        { icon:'&#x1F464;', label:'Guest Name',    val: b.masked_name || '—', full: false }
+    ];
+    document.getElementById('detailGrid').innerHTML = items.map(function(it) {
+        return '<div class="detail-item'+(it.full?' full':'')+'"><div class="d-icon">'+it.icon+'</div><div class="d-label">'+it.label+'</div><div class="d-val">'+it.val+'</div></div>';
+    }).join('');
+
+    // Special requests
+    if (b.special_req && b.special_req.trim()) {
+        document.getElementById('specialNote').style.display = 'flex';
+        document.getElementById('specialText').textContent   = 'Special request: ' + b.special_req;
+    } else {
+        document.getElementById('specialNote').style.display = 'none';
+    }
+
+    document.getElementById('resultCard').classList.add('show');
+}
+
+function updateTimeline(status, date) {
+    var today = new Date().toISOString().split('T')[0];
+    var isPast = date < today;
+
+    var tl1 = document.getElementById('tl1');
+    var tl2 = document.getElementById('tl2');  var tl2l = document.getElementById('tl2l');
+    var tl3 = document.getElementById('tl3');  var tl3l = document.getElementById('tl3l');
+    var tl4 = document.getElementById('tl4');  var tl4l = document.getElementById('tl4l');
+
+    // Reset all
+    [tl1,tl2,tl3,tl4].forEach(function(d){ d.className='tl-dot'; });
+    [tl2l,tl3l,tl4l].forEach(function(l){ l.className='tl-step-label'; });
+
+    tl1.className = 'tl-dot done';
+
+    if (status === 'Cancelled') {
+        tl2.className = 'tl-dot cancelled-dot'; tl2.innerHTML='&#x2715;';
+        tl2l.textContent='Cancelled'; tl2l.className='tl-step-label';
+        tl2l.style.color='#f4a68a';
+    } else if (isPast) {
+        // booking date has passed — all done
+        tl2.className='tl-dot done'; tl2.innerHTML='&#x2713;';
+        tl3.className='tl-dot done'; tl3.innerHTML='&#x2713;';
+        tl4.className='tl-dot done'; tl4.innerHTML='&#x2714;';
+        tl2l.className='tl-step-label done';
+        tl3l.className='tl-step-label done';
+        tl4l.className='tl-step-label done';
+    } else if (date === today) {
+        tl2.className='tl-dot done'; tl2.innerHTML='&#x2713;';
+        tl3.className='tl-dot active'; tl3.innerHTML='&#x1F37D;';
+        tl3l.className='tl-step-label active'; tl3l.textContent='Today!';
+    } else {
+        // upcoming
+        tl2.className='tl-dot done'; tl2.innerHTML='&#x2713;';
+        tl3.className='tl-dot active'; tl3.innerHTML='&#x1F4C5;';
+        tl3l.className='tl-step-label active'; tl3l.textContent='Upcoming';
+    }
+}
+
+function formatDate(ds) {
+    if (!ds || ds.length < 8) return ds || '—';
+    try {
+        var d = new Date(ds + 'T12:00:00');
+        return d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+    } catch(e) { return ds; }
+}
+
+function trackAnother() {
+    document.getElementById('refInput').value = '';
+    document.getElementById('resultCard').classList.remove('show');
+    document.getElementById('errorBox').classList.remove('show');
+    document.getElementById('refInput').focus();
+}
+
+/* ── RECENT SEARCHES ── */
+function saveRecent(ref) {
+    var arr = getRecent();
+    arr = [ref].concat(arr.filter(function(r){ return r!==ref; })).slice(0,5);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(arr));
+    renderRecent();
+}
+function getRecent() {
+    try { return JSON.parse(localStorage.getItem(RECENT_KEY)||'[]'); } catch(e){ return []; }
+}
+function renderRecent() {
+    var arr = getRecent();
+    var wrap = document.getElementById('recentWrap');
+    if (!arr.length) { wrap.classList.remove('show'); return; }
+    wrap.classList.add('show');
+    document.getElementById('recentChips').innerHTML = arr.map(function(r){
+        return '<div class="recent-chip" onclick="useRecent(\''+r+'\')">'+r+'</div>';
+    }).join('');
+}
+function useRecent(ref) {
+    document.getElementById('refInput').value = ref;
+    trackBooking();
+}
+
+/* ── CHECK URL PARAM (?ref=ARM-1234) ── */
+window.addEventListener('load', function() {
+    renderRecent();
+    var params = new URLSearchParams(window.location.search);
+    var ref = params.get('ref');
+    if (ref) {
+        document.getElementById('refInput').value = ref.toUpperCase();
+        trackBooking();
+    }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Aroma &amp; Co. — Staff Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--espresso:#2c1a0e;--coffee:#6b3f1f;--caramel:#c8833a;--gold:#d4a853;--cream:#f5f0e8;--warm:#faf8f4;--latte:#d4b896;--dark:#1a0f07;--sage:#7a8c6e}
+  body{font-family:'DM Sans',sans-serif;background:var(--dark);min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+
+  /* animated background */
+  .bg-rings{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .ring{position:absolute;border-radius:50%;border:1px solid rgba(200,131,58,.08);animation:expand 8s ease-in-out infinite}
+  .ring:nth-child(1){width:300px;height:300px;top:-80px;right:-80px;animation-delay:0s}
+  .ring:nth-child(2){width:500px;height:500px;bottom:-200px;left:-200px;animation-delay:2s}
+  .ring:nth-child(3){width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:4s}
+  @keyframes expand{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(1.05);opacity:.8}}
+  .ring:nth-child(3){animation:expandC 8s ease-in-out infinite 4s}
+  @keyframes expandC{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.4}50%{transform:translate(-50%,-50%) scale(1.05);opacity:.8}}
+
+  /* card */
+  .login-card{position:relative;z-index:1;width:100%;max-width:420px;margin:20px}
+  .login-brand{text-align:center;margin-bottom:36px}
+  .login-brand h1{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;color:var(--cream);letter-spacing:-.02em}
+  .login-brand h1 span{color:var(--caramel);font-style:italic}
+  .login-brand p{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(245,240,232,.4);margin-top:6px}
+
+  .card{background:rgba(250,248,244,.04);border:1px solid rgba(212,184,150,.12);backdrop-filter:blur(20px);border-radius:16px;padding:44px 40px;box-shadow:0 32px 80px rgba(0,0,0,.4)}
+
+  .card h2{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--cream);margin-bottom:6px;font-weight:700}
+  .card p.sub{font-size:.82rem;color:rgba(245,240,232,.45);margin-bottom:32px}
+
+  .form-group{margin-bottom:20px}
+  .form-group label{display:block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;font-weight:500;color:rgba(245,240,232,.5);margin-bottom:8px}
+  .form-group input{width:100%;padding:13px 16px;background:rgba(245,240,232,.06);border:1px solid rgba(212,184,150,.2);border-radius:8px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .3s,background .3s}
+  .form-group input:focus{border-color:var(--caramel);background:rgba(200,131,58,.06)}
+  .form-group input::placeholder{color:rgba(245,240,232,.25)}
+
+  .error-box{background:rgba(196,96,58,.15);border:1px solid rgba(196,96,58,.4);border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:.83rem;color:#f4a68a;display:flex;align-items:center;gap:8px}
+
+  .btn-login{width:100%;padding:14px;background:var(--caramel);color:var(--cream);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:background .3s,transform .15s;margin-top:8px}
+  .btn-login:hover{background:var(--gold)}
+  .btn-login:active{transform:scale(.98)}
+
+  .login-roles{margin-top:28px;padding-top:24px;border-top:1px solid rgba(212,184,150,.1)}
+  .roles-label{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(245,240,232,.3);margin-bottom:14px;text-align:center}
+  .role-pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .role-pill{padding:6px 14px;border-radius:20px;font-size:.73rem;font-weight:500;cursor:pointer;transition:all .2s;border:1px solid rgba(212,184,150,.2);color:rgba(245,240,232,.55);background:rgba(245,240,232,.04)}
+  .role-pill:hover{background:rgba(200,131,58,.15);border-color:var(--caramel);color:var(--cream)}
+  .role-pill.admin-pill .tag{background:var(--gold);color:var(--dark);font-size:.6rem;padding:1px 6px;border-radius:4px;margin-left:4px;font-weight:700}
+  .role-pill.staff-pill .tag{background:var(--sage);color:#fff;font-size:.6rem;padding:1px 6px;border-radius:4px;margin-left:4px;font-weight:700}
+
+  .back-link{display:block;text-align:center;margin-top:20px;font-size:.78rem;color:rgba(245,240,232,.3);transition:color .2s}
+  .back-link:hover{color:var(--latte)}
+
+  /* loading spinner */
+  .spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="bg-rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
+
+<div class="login-card">
+  <div class="login-brand">
+    <h1>Aroma<span>&amp;Co.</span></h1>
+    <p>Staff Portal &middot; Lucknow</p>
+  </div>
+
+  <div class="card">
+    <h2>Welcome back</h2>
+    <p class="sub">Sign in to access the café dashboard.</p>
+
+    {% if error %}
+    <div class="error-box">&#x26A0;&#xFE0F; {{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="/login{% if next %}?next={{ next }}{% endif %}" id="loginForm">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" name="username" id="username" placeholder="admin / staff / manager" autocomplete="username" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" id="password" placeholder="••••••••" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn-login" id="loginBtn">
+        <span id="btnText">Sign In &rarr;</span>
+        <div class="spinner" id="spinner"></div>
+      </button>
+    </form>
+
+    <div class="login-roles">
+      <div class="roles-label">Quick fill</div>
+      <div class="role-pills">
+        <div class="role-pill admin-pill" onclick="fillCreds('admin','admin123')">
+          &#x1F451; Admin <span class="tag">FULL</span>
+        </div>
+        <div class="role-pill staff-pill" onclick="fillCreds('staff','staff123')">
+          &#x2615; Staff <span class="tag">READ</span>
+        </div>
+        <div class="role-pill admin-pill" onclick="fillCreds('manager','manager123')">
+          &#x1F4CB; Manager <span class="tag">FULL</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <a href="/" class="back-link">&larr; Back to Café Website</a>
+</div>
+
+<script>
+function fillCreds(u, p) {
+    document.getElementById("username").value = u;
+    document.getElementById("password").value = p;
+    document.getElementById("username").focus();
+}
+document.getElementById("loginForm").addEventListener("submit", function () {
+    document.getElementById("btnText").style.display = "none";
+    document.getElementById("spinner").style.display = "block";
+    document.getElementById("loginBtn").disabled = true;
+});
+// Auto-focus
+document.getElementById("username").focus();
+</script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+version: "3.1"
+
+nlu:
+
+- intent: greet
+  examples: |
+    - hey
+    - hello
+    - hi
+    - hello there
+    - good morning
+    - good evening
+    - good afternoon
+    - namaste
+    - hiya
+    - howdy
+
+- intent: goodbye
+  examples: |
+    - bye
+    - goodbye
+    - see you later
+    - bye bye
+    - have a nice day
+    - take care
+    - farewell
+    - see ya
+    - later
+
+- intent: affirm
+  examples: |
+    - yes
+    - yeah
+    - sure
+    - of course
+    - absolutely
+    - yep
+    - ok
+    - okay
+    - definitely
+    - sounds good
+
+- intent: deny
+  examples: |
+    - no
+    - nope
+    - not really
+    - no way
+    - nah
+    - no thanks
+    - not interested
+
+- intent: mood_great
+  examples: |
+    - I am feeling great
+    - wonderful
+    - amazing
+    - fantastic
+    - feeling awesome
+    - all good
+    - excellent
+
+- intent: mood_unhappy
+  examples: |
+    - I am sad
+    - not good
+    - feeling down
+    - upset
+    - frustrated
+    - terrible day
+    - very unhappy
+
+- intent: bot_challenge
+  examples: |
+    - are you a bot?
+    - are you a human?
+    - am I talking to a robot?
+    - are you AI?
+    - who are you?
+    - are you using Gemini?
+    - are you ChatGPT?
+
+- intent: thank
+  examples: |
+    - thanks
+    - thank you
+    - thank you so much
+    - thanks a lot
+    - appreciate it
+    - cheers
+    - many thanks
+
+- intent: reserve_table
+  examples: |
+    - I want to book a table
+    - reserve a table for [2](guest_count) on [Saturday](booking_date) at [7pm](booking_time)
+    - book a table for [Rohit](customer_name) on [25 March](booking_date)
+    - I'd like to make a reservation
+    - can I book a table for [4 people](guest_count)?
+    - table booking for [tomorrow](booking_date) at [8pm](booking_time)
+    - reserve for [3](guest_count) guests
+    - book a seat at the café
+    - I want to dine on [Sunday](booking_date)
+    - table for [2](guest_count) at [8:00 PM](booking_time)
+    - reservation please
+    - book for my birthday on [22 March](booking_date)
+    - reserve a table for [Priya](customer_name) for [2](guest_count)
+    - I need a table for [5](guest_count) on [20 March](booking_date)
+    - table booking
+    - can I get a table for [this Friday](booking_date)?
+
+- intent: check_slots
+  examples: |
+    - what time slots are available?
+    - show me available timings
+    - which slots are free on [Saturday](booking_date)?
+    - is [7pm](booking_time) available on [Sunday](booking_date)?
+    - available times for [tomorrow](booking_date)
+    - when can I come?
+    - any openings this weekend?
+    - is [8 PM](booking_time) free?
+    - check availability for [25 March](booking_date)
+    - are there slots on [Friday](booking_date)?
+    - any table for [tonight](booking_date)?
+
+- intent: cancel_reservation
+  examples: |
+    - I want to cancel my reservation
+    - cancel my booking [ARM-1234](booking_ref)
+    - please cancel [ARM-5678](booking_ref)
+    - I need to cancel my table
+    - cancel reservation
+    - remove my booking
+    - I can't make it please cancel
+
+- intent: provide_booking_ref
+  examples: |
+    - [ARM-1234](booking_ref)
+    - my reference is [ARM-5678](booking_ref)
+    - it's [ARM-9012](booking_ref)
+    - the ref is [ARM-3456](booking_ref)
+    - booking ref [ARM-7890](booking_ref)
+
+- intent: menu_info
+  examples: |
+    - what's on the menu?
+    - show me the menu
+    - what do you serve?
+    - tell me about [espresso](product_name)
+    - what is [cold brew](product_name)?
+    - describe [rose saffron latte](product_name)
+    - do you have [matcha](product_name)?
+    - tell me about [croissant](product_name)
+    - what food do you serve?
+    - what drinks are available?
+    - do you have [vegan](product_name) options?
+    - what [coffee](product_name) do you make?
+    - [mango lassi](product_name) details
+    - tell me about [hojicha](product_name)
+    - [espresso tonic](product_name) details
+    - what [tea](product_name) do you have?
+    - any specials today?
+    - what are your signature drinks?
+    - recommend something good
+
+- intent: ask_price
+  examples: |
+    - how much is [espresso](product_name)?
+    - price of [cold brew](product_name)
+    - what does [latte](product_name) cost?
+    - how expensive is [eggs benedict](product_name)?
+    - cost of [croissant](product_name)
+    - how much for [matcha cortado](product_name)?
+    - [kombucha](product_name) price?
+    - how much is [rose latte](product_name)?
+    - what's the cheapest item?
+    - give me a price list
+
+- intent: check_availability
+  examples: |
+    - is [cold brew](product_name) available?
+    - do you have [truffle toast](product_name) today?
+    - is [mango lassi](product_name) on the menu?
+    - [matcha](product_name) available?
+    - is [hojicha](product_name) available?
+
+- intent: cafe_info
+  examples: |
+    - what are your opening hours?
+    - when do you open?
+    - when do you close?
+    - are you open on Sunday?
+    - store timings please
+    - where are you located?
+    - what's your address?
+    - directions to the café
+    - do you have WiFi?
+    - what's the WiFi password?
+    - is parking available?
+    - do you have vegan options?
+    - any gluten-free items?
+    - do you have oat milk?
+    - what events do you have?
+    - do you have live music?
+    - tell me about the barista workshop
+    - jazz events?
+    - can I host a birthday there?
+    - what payment do you accept?
+    - do you accept UPI?
+    - how can I contact you?
+    - what's your phone number?
+
+- intent: human_agent
+  examples: |
+    - talk to a human
+    - I want to speak with someone
+    - connect me to your team
+    - agent please
+    - I need help from a real person
+    - speak to a real person
+    - live support
+    - I need human help
+    - customer support please

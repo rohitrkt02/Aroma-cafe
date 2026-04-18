@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aroma &amp; Co. — Artisan Café · Lucknow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream:#f5f0e8;--warm-white:#faf8f4;--espresso:#2c1a0e;
+            --coffee:#6b3f1f;--caramel:#c8833a;--gold:#d4a853;
+            --sage:#7a8c6e;--terracotta:#c4603a;--latte:#d4b896;--dark-roast:#1a0f07;
+        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--espresso);overflow-x:hidden;cursor:none}
+        a{text-decoration:none;color:inherit}
+
+        /* CURSOR */
+        .cursor{width:10px;height:10px;background:var(--caramel);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;left:-100px;top:-100px;transform:translate(-50%,-50%);opacity:0;transition:width .2s,height .2s,background .2s,opacity .3s}
+        .cursor-ring{width:36px;height:36px;border:2px solid var(--caramel);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;left:-100px;top:-100px;transform:translate(-50%,-50%);opacity:0;transition:width .25s,height .25s,border-color .25s,opacity .3s}
+
+        /* NAV */
+        nav{position:fixed;top:0;width:100%;z-index:1000;padding:22px 5%;display:flex;justify-content:space-between;align-items:center;transition:all .4s}
+        nav.scrolled{background:rgba(250,248,244,.96);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);padding:13px 5%;box-shadow:0 1px 0 rgba(44,26,14,.08),0 4px 20px rgba(44,26,14,.05)}
+        .nav-logo{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--espresso);letter-spacing:-.02em;cursor:pointer;transition:opacity .2s}
+        .nav-logo:hover{opacity:.82}
+        .nav-logo span{color:var(--caramel);font-style:italic}
+        .nav-links{display:flex;gap:36px;list-style:none}
+        .nav-links a{font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;color:var(--espresso);font-weight:500;opacity:.7;transition:opacity .2s,color .2s;position:relative}
+        .nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:var(--caramel);transition:width .3s}
+        .nav-links a:hover{opacity:1;color:var(--caramel)}
+        .nav-links a:hover::after{width:100%}
+        .nav-reserve{background:var(--espresso)!important;color:var(--cream)!important;padding:10px 22px;border-radius:2px;opacity:1!important;font-size:.78rem!important;letter-spacing:.14em!important;transition:background .3s!important}
+        .nav-reserve:hover{background:var(--caramel)!important}
+        .nav-reserve::after{display:none!important}
+
+        /* HERO */
+        .hero{height:100vh;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
+        .hero-left{background:var(--espresso);display:flex;align-items:center;justify-content:center;padding:80px 8% 80px 10%;position:relative;overflow:hidden}
+        .hero-left::before{content:'';position:absolute;top:-20%;right:-10%;width:400px;height:400px;background:radial-gradient(circle,rgba(200,131,58,.15) 0%,transparent 70%);pointer-events:none}
+        .hero-grain{position:absolute;inset:0;pointer-events:none;opacity:.6;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")}
+        .hero-text{position:relative;z-index:2}
+        .hero-tagline{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--caramel);margin-bottom:24px;display:flex;align-items:center;gap:12px}
+        .hero-tagline::before{content:'';width:32px;height:1px;background:var(--caramel)}
+        .hero-title{font-family:'Playfair Display',serif;font-size:clamp(3rem,5vw,5rem);font-weight:900;color:var(--cream);line-height:1.05;margin-bottom:28px}
+        .hero-title em{font-style:italic;color:var(--gold);display:block}
+        .hero-desc{font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:rgba(245,240,232,.65);line-height:1.8;margin-bottom:44px;max-width:340px}
+        .hero-cta{display:flex;gap:16px;align-items:center}
+        .btn-primary{background:var(--caramel);color:var(--cream);padding:14px 32px;border:none;font-family:'DM Sans',sans-serif;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;cursor:pointer;border-radius:2px;display:inline-block;transition:all .3s;position:relative;overflow:hidden}
+        .btn-primary::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.1);transform:translateX(-100%);transition:transform .3s}
+        .btn-primary:hover::after{transform:translateX(0)}
+        .btn-primary:active{transform:scale(.97)}
+        .btn-secondary{color:var(--latte);font-size:.8rem;letter-spacing:.06em;display:flex;align-items:center;gap:8px;transition:color .2s}
+        .btn-secondary:hover{color:var(--gold)}
+        .hero-right{position:relative;overflow:hidden}
+        .hero-img{width:100%;height:100%;object-fit:cover;transform:scale(1.05);transition:transform 8s ease}
+        .hero:hover .hero-img{transform:scale(1)}
+        .hero-right-overlay{position:absolute;inset:0;background:linear-gradient(to right,var(--espresso) 0%,transparent 40%)}
+        .hero-badge{position:absolute;bottom:48px;right:48px;width:110px;height:110px;background:var(--caramel);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;animation:rotateBadge 18s linear infinite}
+        .hero-badge-inner{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--cream);line-height:1}
+        .hero-badge-text{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(245,240,232,.8)}
+        @keyframes rotateBadge{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+        .scroll-hint{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:rgba(245,240,232,.4);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase}
+        .scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--caramel),transparent);animation:scrollAnim 2s ease-in-out infinite}
+        @keyframes scrollAnim{0%,100%{transform:scaleY(1);opacity:.4}50%{transform:scaleY(.5);opacity:.8}}
+
+        /* MARQUEE */
+        .marquee-strip{background:var(--caramel);padding:14px 0;overflow:hidden;white-space:nowrap}
+        .marquee-inner{display:inline-flex;animation:marquee 20s linear infinite}
+        .marquee-item{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--cream);padding:0 32px;display:inline-flex;align-items:center;gap:14px}
+        .marquee-dot{width:4px;height:4px;background:rgba(255,255,255,.5);border-radius:50%}
+        @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+        /* SECTIONS */
+        section{padding:100px 5%}
+        .section-label{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--caramel);margin-bottom:16px;display:flex;align-items:center;gap:12px}
+        .section-label::before{content:'';width:28px;height:1px;background:var(--caramel)}
+        .section-title{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,4vw,3.5rem);font-weight:700;line-height:1.1;color:var(--espresso)}
+        .section-title em{font-style:italic;color:var(--coffee)}
+
+        /* ABOUT */
+        .about{background:var(--cream)}
+        .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;max-width:1200px;margin:0 auto}
+        .about-img-wrapper{position:relative}
+        .about-img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block}
+        .about-img-accent{position:absolute;top:-20px;left:-20px;right:20px;bottom:20px;border:1.5px solid var(--latte);z-index:-1}
+        .about-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--latte);border:1px solid var(--latte);margin-top:40px}
+        .stat-box{background:var(--cream);padding:28px;text-align:center}
+        .stat-number{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:var(--espresso);line-height:1}
+        .stat-label{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--coffee);margin-top:6px;opacity:.7}
+        .about-body{font-family:'Cormorant Garamond',serif;font-size:1.2rem;line-height:1.85;color:var(--coffee);margin:24px 0 36px}
+
+        /* MENU */
+        .menu{background:var(--warm-white)}
+        .menu-header{text-align:center;margin-bottom:60px;max-width:520px;margin-left:auto;margin-right:auto}
+        .menu-tabs{display:flex;justify-content:center;margin-bottom:56px;border-bottom:1px solid var(--latte)}
+        .menu-tab{padding:12px 28px;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;cursor:pointer;border:none;background:none;color:var(--espresso);opacity:.4;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .3s;font-family:'DM Sans',sans-serif}
+        .menu-tab.active{opacity:1;border-bottom-color:var(--caramel);color:var(--caramel)}
+        .menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--latte);border:1px solid var(--latte);max-width:1200px;margin:0 auto}
+        .menu-panel{display:none;width:100%}
+        .menu-panel.active{display:block}
+        .menu-item{background:var(--warm-white);padding:32px;position:relative;transition:background .3s,transform .25s,box-shadow .25s;overflow:hidden}
+        .menu-item:hover{background:var(--cream);transform:translateY(-2px);box-shadow:0 8px 28px rgba(44,26,14,.08)}
+        .menu-item::before{content:'';position:absolute;top:0;left:0;width:0;height:2px;background:var(--caramel);transition:width .4s}
+        .menu-item:hover::before{width:100%}
+        .menu-item-emoji{font-size:1.8rem;margin-bottom:12px;display:block}
+        .menu-item-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600;color:var(--espresso);margin-bottom:8px}
+        .menu-item-desc{font-size:.82rem;color:var(--coffee);opacity:.7;line-height:1.6;margin-bottom:16px}
+        .menu-item-price{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--caramel);font-weight:600}
+        .menu-item-tag{position:absolute;top:16px;right:16px;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;background:var(--sage);color:#fff;padding:4px 10px;border-radius:2px}
+
+        /* EXPERIENCE */
+        .experience{background:var(--espresso);color:var(--cream)}
+        .experience-grid{display:grid;grid-template-columns:1fr 2fr;gap:80px;align-items:start;max-width:1200px;margin:0 auto}
+        .experience .section-label{color:var(--gold)}
+        .experience .section-label::before{background:var(--gold)}
+        .experience .section-title{color:var(--cream)}
+        .experience-features{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40px}
+        .feature-card{padding:32px;border:1px solid rgba(212,184,150,.15);transition:border-color .3s,transform .3s,box-shadow .3s,background .3s}
+        .feature-card:hover{border-color:var(--caramel);transform:translateY(-4px);box-shadow:0 12px 40px rgba(200,131,58,.15);background:rgba(200,131,58,.04)}
+        .feature-icon{font-size:2rem;margin-bottom:16px;display:block}
+        .feature-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600;color:var(--cream);margin-bottom:8px}
+        .feature-desc{font-size:.85rem;color:rgba(245,240,232,.55);line-height:1.7}
+
+        /* GALLERY */
+        .gallery{background:var(--cream);padding:100px 0;overflow:hidden}
+        .gallery-header{padding:0 5%;margin-bottom:48px}
+        .gallery-strip{display:flex;gap:16px;padding:0 5%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+        .gallery-strip::-webkit-scrollbar{display:none}
+        .gallery-card{flex-shrink:0;width:320px;height:420px;position:relative;overflow:hidden;border-radius:4px;cursor:pointer}
+        .gallery-card img{width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.25,.46,.45,.94)}
+        .gallery-card:hover img{transform:scale(1.08)}
+        .gallery-card-label{position:absolute;bottom:0;left:0;right:0;padding:32px 24px 24px;background:linear-gradient(to top,rgba(26,15,7,.85),transparent);color:var(--cream)}
+        .gallery-card-label h4{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600}
+        .gallery-card-label p{font-size:.78rem;opacity:.65;margin-top:4px}
+
+        /* BOOKING */
+        .booking{background:var(--warm-white)}
+        .booking-inner{max-width:1000px;margin:0 auto;background:var(--espresso);display:grid;grid-template-columns:1fr 1fr}
+        .booking-left{padding:64px;position:relative;overflow:hidden}
+        .booking-left::before{content:'"';position:absolute;top:-20px;right:24px;font-family:'Playfair Display',serif;font-size:18rem;color:rgba(200,131,58,.08);line-height:1}
+        .booking-left .section-label{color:var(--gold)}
+        .booking-left .section-label::before{background:var(--gold)}
+        .booking-left .section-title{color:var(--cream);font-size:2.5rem}
+        .booking-info-list{margin-top:36px;display:flex;flex-direction:column;gap:20px}
+        .booking-info-item{display:flex;gap:16px;align-items:flex-start}
+        .booking-info-icon{font-size:1.3rem;flex-shrink:0;margin-top:2px}
+        .booking-info-text h4{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--cream);margin-bottom:2px}
+        .booking-info-text p{font-size:.8rem;color:rgba(245,240,232,.5);line-height:1.6}
+        .booking-right{background:var(--cream);padding:64px 48px}
+        .booking-right h3{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--espresso);margin-bottom:32px}
+        .form-group{margin-bottom:20px}
+        .form-group label{display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;color:var(--coffee);margin-bottom:8px}
+        .form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 16px;border:1px solid var(--latte);background:var(--warm-white);color:var(--espresso);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .3s;border-radius:2px;-webkit-appearance:none}
+        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--caramel)}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+        .form-submit{width:100%;padding:15px;background:var(--espresso);color:var(--cream);border:none;font-family:'DM Sans',sans-serif;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;font-weight:500;cursor:pointer;margin-top:8px;transition:background .3s;border-radius:2px}
+        .form-submit:hover{background:var(--caramel)}
+        .time-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+        .time-slot{padding:10px 8px;text-align:center;border:1px solid var(--latte);font-size:.78rem;cursor:pointer;transition:all .2s;background:var(--warm-white);color:var(--espresso);border-radius:2px;font-family:'DM Sans',sans-serif}
+        .time-slot:hover,.time-slot.selected{background:var(--espresso);color:var(--cream);border-color:var(--espresso)}
+        .time-slot.unavailable{opacity:.35;cursor:not-allowed;text-decoration:line-through}
+        .time-slot-label{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;color:var(--coffee);margin-bottom:8px}
+        .success-screen{text-align:center;padding:20px 0;display:none}
+        .success-icon{font-size:4rem;margin-bottom:16px}
+        .success-screen h3{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--espresso);margin-bottom:8px}
+        .success-screen p{color:var(--coffee);opacity:.65;font-size:.9rem;line-height:1.7}
+        .booking-ref{display:inline-block;margin-top:20px;padding:12px 24px;background:var(--espresso);color:var(--cream);font-family:'Playfair Display',serif;font-size:1.1rem;letter-spacing:.1em;border-radius:2px}
+
+        /* FOOTER */
+        footer{background:var(--dark-roast);color:var(--cream);padding:80px 5% 40px}
+        .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;max-width:1200px;margin:0 auto 60px}
+        .footer-brand h3{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;margin-bottom:16px}
+        .footer-brand h3 span{color:var(--caramel);font-style:italic}
+        .footer-brand p{font-size:.85rem;line-height:1.8;color:rgba(245,240,232,.45);max-width:260px}
+        .footer-social{display:flex;gap:12px;margin-top:24px}
+        .social-btn{width:38px;height:38px;border:1px solid rgba(245,240,232,.15);display:flex;align-items:center;justify-content:center;font-size:1rem;transition:border-color .2s,background .2s;border-radius:2px;cursor:pointer}
+        .social-btn:hover{border-color:var(--caramel);background:rgba(200,131,58,.1)}
+        .footer-col h4{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--caramel);margin-bottom:20px;font-weight:500}
+        .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+        .footer-col ul li a{font-size:.84rem;color:rgba(245,240,232,.45);transition:color .2s}
+        .footer-col ul li a:hover{color:var(--cream)}
+        .footer-bottom{border-top:1px solid rgba(245,240,232,.08);padding-top:32px;display:flex;justify-content:space-between;max-width:1200px;margin:0 auto}
+        .footer-bottom p{font-size:.78rem;color:rgba(245,240,232,.3)}
+
+        /* CHATBOT BUTTON */
+        #chatbot-toggle{position:fixed;bottom:28px;right:28px;width:60px;height:60px;background:var(--espresso);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5000;box-shadow:0 8px 32px rgba(44,26,14,.35);transition:transform .3s,background .3s;border:2px solid var(--caramel)}
+        #chatbot-toggle:hover{transform:scale(1.1);background:var(--caramel)}
+        #chatbot-toggle .toggle-icon{font-size:1.5rem;transition:transform .3s}
+        #chatbot-toggle.open .toggle-icon{transform:rotate(45deg)}
+        .chat-badge{position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:var(--terracotta);border-radius:50%;font-size:.6rem;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;animation:pulseBadge 2s ease-in-out infinite}
+        @keyframes pulseBadge{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+
+        /* CHATBOT WINDOW */
+        #chatbot-window{position:fixed;bottom:104px;right:28px;width:380px;height:570px;background:var(--warm-white);border-radius:14px;box-shadow:0 24px 80px rgba(44,26,14,.28),0 0 0 1px rgba(200,131,58,.12);z-index:4999;display:flex;flex-direction:column;overflow:hidden;transform:scale(.8) translateY(20px);transform-origin:bottom right;opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.34,1.56,.64,1)}
+        #chatbot-window.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
+        .chatbot-header{background:var(--espresso);padding:20px 20px 16px;display:flex;align-items:center;gap:14px}
+        .chatbot-avatar{width:42px;height:42px;background:var(--caramel);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+        .chatbot-header-info h4{font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;color:var(--cream);margin-bottom:2px}
+        .chatbot-status{font-size:.7rem;color:var(--sage);display:flex;align-items:center;gap:5px}
+        .chatbot-status::before{content:'';width:6px;height:6px;background:var(--sage);border-radius:50%;animation:pulseGreen 2s infinite}
+        @keyframes pulseGreen{0%,100%{opacity:1}50%{opacity:.3}}
+        .chatbot-close{margin-left:auto;background:none;border:none;color:rgba(245,240,232,.4);font-size:1.2rem;cursor:pointer;transition:color .2s}
+        .chatbot-close:hover{color:var(--cream)}
+        .chatbot-messages{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:var(--latte) transparent}
+        .chat-msg{display:flex;flex-direction:column;max-width:82%;animation:msgIn .3s ease forwards}
+        @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        .chat-msg.bot{align-self:flex-start}
+        .chat-msg.user{align-self:flex-end}
+        .chat-bubble{padding:12px 16px;border-radius:14px;font-size:.875rem;line-height:1.55}
+        .chat-msg.bot .chat-bubble{background:var(--cream);color:var(--espresso);border-bottom-left-radius:4px;border:1px solid var(--latte)}
+        .chat-msg.user .chat-bubble{background:var(--espresso);color:var(--cream);border-bottom-right-radius:4px}
+        .chat-time{font-size:.62rem;color:rgba(44,26,14,.35);margin-top:5px;padding:0 4px}
+        .chat-msg.user .chat-time{text-align:right}
+        .chat-suggestions{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 12px}
+        .suggestion-chip{padding:7px 14px;border:1px solid var(--latte);background:var(--cream);color:var(--espresso);font-size:.76rem;border-radius:20px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap}
+        .suggestion-chip:hover{background:var(--espresso);color:var(--cream);border-color:var(--espresso)}
+        .chatbot-input-area{padding:12px 16px;border-top:1px solid var(--latte);display:flex;gap:10px;background:var(--warm-white)}
+        #chat-input{flex:1;padding:11px 16px;border:1px solid var(--latte);background:var(--cream);border-radius:24px;font-family:'DM Sans',sans-serif;font-size:.875rem;color:var(--espresso);outline:none;transition:border-color .2s}
+        #chat-input:focus{border-color:var(--caramel)}
+        #chat-send{width:42px;height:42px;background:var(--caramel);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;transition:background .2s,transform .2s}
+        #chat-send:hover{background:var(--espresso);transform:scale(1.05)}
+        .typing-indicator{display:flex;gap:4px;padding:14px 16px;background:var(--cream);border-radius:14px;border-bottom-left-radius:4px;width:fit-content;border:1px solid var(--latte)}
+        .typing-dot{width:6px;height:6px;background:var(--latte);border-radius:50%;animation:typingAnim 1.2s ease-in-out infinite}
+        .typing-dot:nth-child(2){animation-delay:.2s}
+        .typing-dot:nth-child(3){animation-delay:.4s}
+        @keyframes typingAnim{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+
+        /* BOOKING MODAL */
+        .modal-overlay{position:fixed;inset:0;background:rgba(26,15,7,.8);z-index:8000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px)}
+        .modal-overlay.open{opacity:1;pointer-events:all}
+        .modal{background:var(--warm-white);width:90%;max-width:540px;max-height:85vh;overflow-y:auto;padding:48px;position:relative;transform:translateY(30px);transition:transform .3s;border-radius:4px}
+        .modal-overlay.open .modal{transform:translateY(0)}
+        .modal-close{position:absolute;top:20px;right:20px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--coffee);transition:color .2s}
+        .modal-close:hover{color:var(--caramel)}
+        .modal h2{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--espresso);margin-bottom:6px}
+        .modal p.sub{font-size:.85rem;color:var(--coffee);opacity:.6;margin-bottom:32px}
+        .modal-success{text-align:center;padding:20px 0;display:none}
+        .modal-success .success-icon{font-size:4rem;margin-bottom:16px}
+        .modal-success h3{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--espresso);margin-bottom:8px}
+        .modal-success p{color:var(--coffee);opacity:.65;font-size:.9rem;line-height:1.7}
+
+
+        /* ── TESTIMONIALS ── */
+        .testimonials{background:var(--espresso);padding:100px 5%;overflow:hidden}
+        .testimonials .section-label{color:var(--gold)}
+        .testimonials .section-label::before{background:var(--gold)}
+        .testimonials .section-title{color:var(--cream)}
+        .testi-header{text-align:center;margin-bottom:56px}
+        .testi-track-wrap{overflow:hidden;position:relative}
+        .testi-track-wrap::before,.testi-track-wrap::after{content:"";position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none}
+        .testi-track-wrap::before{left:0;background:linear-gradient(to right,var(--espresso),transparent)}
+        .testi-track-wrap::after{right:0;background:linear-gradient(to left,var(--espresso),transparent)}
+        .testi-track{display:flex;gap:24px;transition:transform .5s cubic-bezier(.25,.46,.45,.94)}
+        .testi-card{flex-shrink:0;width:360px;background:rgba(245,240,232,.05);border:1px solid rgba(212,184,150,.12);border-radius:12px;padding:32px;position:relative;transition:border-color .3s,transform .3s}
+        .testi-card:hover{border-color:rgba(212,184,150,.3);transform:translateY(-4px)}
+        .testi-card::before{content:'"';position:absolute;top:-10px;left:20px;font-family:'Playfair Display',serif;font-size:6rem;color:rgba(212,168,83,.15);line-height:1;pointer-events:none}
+        .testi-stars{display:flex;gap:3px;margin-bottom:16px}
+        .testi-star{color:var(--gold);font-size:1rem}
+        .testi-star.empty{color:rgba(212,184,150,.2)}
+        .testi-text{font-family:'Cormorant Garamond',serif;font-size:1.05rem;line-height:1.8;color:rgba(245,240,232,.75);margin-bottom:20px;font-style:italic}
+        .testi-author{display:flex;align-items:center;gap:12px}
+        .testi-avatar{width:40px;height:40px;border-radius:50%;background:var(--caramel);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--cream);flex-shrink:0}
+        .testi-name{font-size:.9rem;font-weight:600;color:var(--cream)}
+        .testi-date{font-size:.7rem;color:rgba(245,240,232,.3);margin-top:2px}
+        .testi-dots{display:flex;justify-content:center;gap:8px;margin-top:32px}
+        .testi-dot{width:8px;height:8px;border-radius:50%;background:rgba(245,240,232,.15);cursor:pointer;transition:all .3s}
+        .testi-dot.active{background:var(--gold);width:24px;border-radius:4px}
+        .testi-nav{display:flex;justify-content:center;gap:12px;margin-top:20px}
+        .testi-btn{width:42px;height:42px;border:1px solid rgba(212,184,150,.2);border-radius:50%;background:none;color:rgba(245,240,232,.5);font-size:1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center}
+        .testi-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(212,168,83,.08)}
+        .testi-empty{text-align:center;padding:48px;color:rgba(245,240,232,.3);font-size:.9rem}
+
+        /* FADE-UP */
+        .fade-up{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+        .fade-up.visible{opacity:1;transform:translateY(0)}
+
+        /* RESPONSIVE */
+        @media(max-width:768px){
+            .hero{grid-template-columns:1fr}
+            .hero-right{display:none}
+            .hero-left{padding:120px 8% 80px}
+            .about-grid,.experience-grid,.booking-inner{grid-template-columns:1fr}
+            .menu-grid{grid-template-columns:1fr}
+            .experience-features{grid-template-columns:1fr}
+            .footer-grid{grid-template-columns:1fr 1fr}
+            .booking-left,.booking-right{padding:40px 32px}
+            nav ul{display:none}
+            #chatbot-window{width:calc(100vw - 32px);right:16px}
+        }
+    </style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="mainNav">
+    <a href="#home" class="nav-logo">Aroma<span>&amp;Co.</span></a>
+    <ul class="nav-links">
+        <li><a href="#about">Story</a></li>
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#testimonials">Reviews</a></li>
+        <li><a href="#booking" class="nav-reserve">Reserve a Table</a></li>
+    </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+    <div class="hero-left">
+        <div class="hero-grain"></div>
+        <div class="hero-text">
+            <div class="hero-tagline">Est. 2018 · Lucknow</div>
+            <h1 class="hero-title">Where Every Cup<br>Tells a <em>Story.</em></h1>
+            <p class="hero-desc">Artisan coffee, slow-roasted beans from single-origin farms, and a warm corner of the world just for you.</p>
+            <div class="hero-cta">
+                <a href="#menu" class="btn-primary">Explore Menu</a>
+                <a href="#booking" class="btn-secondary">Book a Table &rarr;</a>
+            </div>
+        </div>
+        <div class="scroll-hint"><div class="scroll-line"></div>Scroll</div>
+    </div>
+    <div class="hero-right">
+        <img src="https://picsum.photos/id/766/900/700" alt="Artisan coffee" class="hero-img" loading="eager"
+             style="background:linear-gradient(135deg,#2c1a0e,#6b3f1f)"
+             onerror="this.onerror=null;this.src='https://picsum.photos/id/30/900/700'">
+        <div class="hero-right-overlay"></div>
+        <div class="hero-badge">
+            <div class="hero-badge-inner">&#9733; 4.9</div>
+            <div class="hero-badge-text">Rated</div>
+        </div>
+    </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-strip">
+    <div class="marquee-inner">
+        <span class="marquee-item">Artisan Coffee <span class="marquee-dot"></span></span>
+        <span class="marquee-item">Single Origin Beans <span class="marquee-dot"></span></span>
+        <span class="marquee-item">Table Reservations <span class="marquee-dot"></span></span>
+        <span class="marquee-item">Freshly Baked Daily <span class="marquee-dot"></span></span>
+        <span class="marquee-item">Live Jazz Evenings <span class="marquee-dot"></span></span>
+        <span class="marquee-item">Private Dining <span class="marquee-dot"></span></span>
+        <span class="marquee-item">Organic &amp; Local <span class="marquee-dot"></span></span>
+        <span class="marquee-item">Artisan Coffee <span class="marquee-dot"></span></span>
+        <span class="marquee-item">Single Origin Beans <span class="marquee-dot"></span></span>
+        <span class="marquee-item">Table Reservations <span class="marquee-dot"></span></span>
+        <span class="marquee-item">Freshly Baked Daily <span class="marquee-dot"></span></span>
+        <span class="marquee-item">Live Jazz Evenings <span class="marquee-dot"></span></span>
+        <span class="marquee-item">Private Dining <span class="marquee-dot"></span></span>
+        <span class="marquee-item">Organic &amp; Local <span class="marquee-dot"></span></span>
+    </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+    <div class="about-grid">
+        <div class="about-img-wrapper fade-up">
+            <img src="https://picsum.photos/id/1060/600/750" alt="Café Interior" class="about-img" loading="lazy"
+                 style="background:linear-gradient(135deg,#f5f0e8,#d4b896)"
+                 onerror="this.onerror=null;this.src='https://picsum.photos/id/684/600/750'">
+            <div class="about-img-accent"></div>
+            <div class="about-stats">
+                <div class="stat-box"><div class="stat-number">12+</div><div class="stat-label">Coffee Origins</div></div>
+                <div class="stat-box"><div class="stat-number">7yr</div><div class="stat-label">Est. Legacy</div></div>
+                <div class="stat-box"><div class="stat-number">24</div><div class="stat-label">Menu Items</div></div>
+                <div class="stat-box"><div class="stat-number">200+</div><div class="stat-label">Daily Guests</div></div>
+            </div>
+        </div>
+        <div class="fade-up">
+            <div class="section-label">Our Story</div>
+            <h2 class="section-title">Crafted with <em>Passion,</em> Served with Soul</h2>
+            <p class="about-body">Aroma &amp; Co. was born from a simple dream &mdash; to create a place where time slows down, the coffee is always perfect, and every guest feels like a regular. Our beans travel from Ethiopian highlands and Colombian valleys to land in your cup, roasted in-house every morning.</p>
+            <a href="#menu" class="btn-primary">See Our Menu</a>
+        </div>
+    </div>
+</section>
+
+<!-- MENU -->
+<section class="menu" id="menu">
+    <div class="menu-header fade-up">
+        <div class="section-label" style="justify-content:center">What We Offer</div>
+        <h2 class="section-title" style="text-align:center">Our <em>Signature</em> Menu</h2>
+    </div>
+    <div class="menu-tabs">
+        <button class="menu-tab active"    onclick="switchMenuTab('coffee',  this)">&#9749; Coffee</button>
+        <button class="menu-tab"           onclick="switchMenuTab('food',    this)">&#x1F950; Food</button>
+        <button class="menu-tab"           onclick="switchMenuTab('specials',this)">&#x2728; Specials</button>
+        <button class="menu-tab"           onclick="switchMenuTab('drinks',  this)">&#x1F9C3; Drinks</button>
+    </div>
+    <div id="tab-coffee" class="menu-panel active">
+        <div class="menu-grid">
+            <div class="menu-item"><span class="menu-item-emoji">&#9749;</span><div class="menu-item-name">Espresso Classico</div><div class="menu-item-desc">Pure, bold, 25ml of perfection from our Ethiopian blend.</div><div class="menu-item-price">&#x20B9;120</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F95B;</span><div class="menu-item-name">Signature Latte</div><div class="menu-item-desc">Velvety microfoam over a double ristretto. Our house favourite.</div><div class="menu-item-price">&#x20B9;220</div><div class="menu-item-tag">Bestseller</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x2744;&#xFE0F;</span><div class="menu-item-name">Cold Brew Reserve</div><div class="menu-item-desc">18-hour slow-steeped Colombian, served over large ice.</div><div class="menu-item-price">&#x20B9;280</div><div class="menu-item-tag">New</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F36F;</span><div class="menu-item-name">Honey Cardamom Flat White</div><div class="menu-item-desc">Spiced, golden, and surprisingly comforting.</div><div class="menu-item-price">&#x20B9;260</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F33F;</span><div class="menu-item-name">Matcha Cortado</div><div class="menu-item-desc">Ceremonial grade matcha meets a shot of espresso.</div><div class="menu-item-price">&#x20B9;290</div><div class="menu-item-tag">Vegan</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F36B;</span><div class="menu-item-name">Dark Mocha</div><div class="menu-item-desc">72% Valrhona cocoa with our house espresso.</div><div class="menu-item-price">&#x20B9;250</div></div>
+        </div>
+    </div>
+    <div id="tab-food" class="menu-panel">
+        <div class="menu-grid">
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F950;</span><div class="menu-item-name">Butter Croissant</div><div class="menu-item-desc">French-style, laminated 27 times. Flaky beyond belief.</div><div class="menu-item-price">&#x20B9;160</div><div class="menu-item-tag">Fresh Daily</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F96A;</span><div class="menu-item-name">Truffle Mushroom Toast</div><div class="menu-item-desc">Sourdough, ricotta, wild mushrooms &amp; black truffle oil.</div><div class="menu-item-price">&#x20B9;380</div><div class="menu-item-tag">Bestseller</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F957;</span><div class="menu-item-name">Seasonal Grain Bowl</div><div class="menu-item-desc">Farro, roasted veggies, tahini dressing. Wholesome.</div><div class="menu-item-price">&#x20B9;350</div><div class="menu-item-tag">Vegan</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F373;</span><div class="menu-item-name">Eggs Benedict</div><div class="menu-item-desc">Poached farm eggs, hollandaise, smoked salmon on brioche.</div><div class="menu-item-price">&#x20B9;420</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F9C1;</span><div class="menu-item-name">Brown Butter Banana Cake</div><div class="menu-item-desc">Warm slice with a scoop of house vanilla bean gelato.</div><div class="menu-item-price">&#x20B9;290</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F9C0;</span><div class="menu-item-name">Cheese &amp; Charcuterie Board</div><div class="menu-item-desc">Seasonal selection, house-made preserves, artisan crackers.</div><div class="menu-item-price">&#x20B9;680</div><div class="menu-item-tag">Sharing</div></div>
+        </div>
+    </div>
+    <div id="tab-specials" class="menu-panel">
+        <div class="menu-grid">
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F338;</span><div class="menu-item-name">Rose Saffron Latte</div><div class="menu-item-desc">A nod to Lucknow &mdash; saffron milk, rose water, pistachio.</div><div class="menu-item-price">&#x20B9;320</div><div class="menu-item-tag">Seasonal</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F9CA;</span><div class="menu-item-name">Espresso Tonic</div><div class="menu-item-desc">Double shot over premium Indian tonic, lemon peel.</div><div class="menu-item-price">&#x20B9;300</div><div class="menu-item-tag">New</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F342;</span><div class="menu-item-name">Masala Spice Brew</div><div class="menu-item-desc">Single origin, fresh spice blend. Our desi classic.</div><div class="menu-item-price">&#x20B9;220</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1FAD0;</span><div class="menu-item-name">Blueberry Lavender Latte</div><div class="menu-item-desc">House blueberry compote, lavender syrup, oat milk over ice.</div><div class="menu-item-price">&#x20B9;310</div><div class="menu-item-tag">Vegan</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F375;</span><div class="menu-item-name">Hojicha Latte</div><div class="menu-item-desc">Roasted Japanese green tea. Perfect for evenings.</div><div class="menu-item-price">&#x20B9;280</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F382;</span><div class="menu-item-name">Celebration Brunch Set</div><div class="menu-item-desc">Curated spread for two &mdash; coffee, food, dessert, juice.</div><div class="menu-item-price">&#x20B9;1,200</div><div class="menu-item-tag">For 2</div></div>
+        </div>
+    </div>
+    <div id="tab-drinks" class="menu-panel">
+        <div class="menu-grid">
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F34B;</span><div class="menu-item-name">Sparkling Lemonade</div><div class="menu-item-desc">House-pressed lemons, cane sugar, Perrier.</div><div class="menu-item-price">&#x20B9;180</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F353;</span><div class="menu-item-name">Summer Berry Cooler</div><div class="menu-item-desc">Strawberry, raspberry, mint, elderflower over crushed ice.</div><div class="menu-item-price">&#x20B9;220</div><div class="menu-item-tag">New</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F96D;</span><div class="menu-item-name">Alphonso Mango Lassi</div><div class="menu-item-desc">Real Alphonso mangoes blended with rich yoghurt.</div><div class="menu-item-price">&#x20B9;200</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F375;</span><div class="menu-item-name">Single Estate Darjeeling</div><div class="menu-item-desc">First flush, delicate muscatel notes. Served in ceramic.</div><div class="menu-item-price">&#x20B9;160</div><div class="menu-item-tag">Organic</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F9C3;</span><div class="menu-item-name">Fresh Pressed Juice</div><div class="menu-item-desc">Seasonal selection. Ask your server what&rsquo;s in today.</div><div class="menu-item-price">&#x20B9;160</div></div>
+            <div class="menu-item"><span class="menu-item-emoji">&#x1F37A;</span><div class="menu-item-name">House Kombucha</div><div class="menu-item-desc">Brewed in-house, ginger-lemon. Gut-friendly, gloriously fizzy.</div><div class="menu-item-price">&#x20B9;240</div><div class="menu-item-tag">Probiotic</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section class="experience" id="experience">
+    <div class="experience-grid">
+        <div class="fade-up">
+            <div class="section-label">Why Visit</div>
+            <h2 class="section-title">An <em>Experience</em> Beyond the Cup</h2>
+        </div>
+        <div class="experience-features fade-up">
+            <div class="feature-card"><span class="feature-icon">&#x1F3B7;</span><div class="feature-title">Live Jazz Fridays</div><div class="feature-desc">Every Fri &amp; Sat, 7&ndash;10 PM. Local musicians, candlelit tables.</div></div>
+            <div class="feature-card"><span class="feature-icon">&#x1F4DA;</span><div class="feature-title">Book Nook Corner</div><div class="feature-desc">A curated lending library. Stay as long as you like. Drip refills &#x20B9;80.</div></div>
+            <div class="feature-card"><span class="feature-icon">&#x1F382;</span><div class="feature-title">Private Events</div><div class="feature-desc">Birthdays, off-sites, intimate dinners. Up to 30 guests.</div></div>
+            <div class="feature-card"><span class="feature-icon">&#9749;</span><div class="feature-title">Barista Workshops</div><div class="feature-desc">Every Sunday 10 AM. Learn latte art &amp; espresso extraction.</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery" id="gallery">
+    <div class="gallery-header fade-up">
+        <div class="section-label">Atmosphere</div>
+        <h2 class="section-title">Inside <em>Aroma &amp; Co.</em></h2>
+    </div>
+    <div class="gallery-strip">
+        <div class="gallery-card">
+            <img src="https://picsum.photos/id/1060/600/800" alt="The Main Hall" loading="lazy" style="background:linear-gradient(135deg,#3d2010,#8c5a2a)" onerror="this.onerror=null;this.src='https://picsum.photos/id/146/600/800'">
+            <div class="gallery-card-label"><h4>The Main Hall</h4><p>Warm light, vintage oak, quiet corners</p></div>
+        </div>
+        <div class="gallery-card">
+            <img src="https://picsum.photos/id/30/600/800" alt="Latte Art" loading="lazy" style="background:linear-gradient(135deg,#4a2c10,#c8833a)" onerror="this.onerror=null;this.src='https://picsum.photos/id/766/600/800'">
+            <div class="gallery-card-label"><h4>Latte Art</h4><p>Every cup is a small canvas</p></div>
+        </div>
+        <div class="gallery-card">
+            <img src="https://picsum.photos/id/292/600/800" alt="Fresh Pastries" loading="lazy" style="background:linear-gradient(135deg,#c8833a,#f5f0e8)" onerror="this.onerror=null;this.src='https://picsum.photos/id/404/600/800'">
+            <div class="gallery-card-label"><h4>Fresh Pastries</h4><p>Baked on-site every morning</p></div>
+        </div>
+        <div class="gallery-card">
+            <img src="https://picsum.photos/id/493/600/800" alt="The Terrace" loading="lazy" style="background:linear-gradient(135deg,#7a8c6e,#2c4a1e)" onerror="this.onerror=null;this.src='https://picsum.photos/id/452/600/800'">
+            <div class="gallery-card-label"><h4>The Terrace</h4><p>Al fresco dining, any season</p></div>
+        </div>
+        <div class="gallery-card">
+            <img src="https://picsum.photos/id/225/600/800" alt="Roastery" loading="lazy" style="background:linear-gradient(135deg,#1a0f07,#6b3f1f)" onerror="this.onerror=null;this.src='https://picsum.photos/id/1080/600/800'">
+            <div class="gallery-card-label"><h4>Roastery</h4><p>In-house, every morning at 6 AM</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testimonials">
+    <div class="testi-header fade-up">
+        <div class="section-label" style="justify-content:center">What Guests Say</div>
+        <h2 class="section-title" style="text-align:center">Loved by <em style="color:var(--gold);font-style:italic">Lucknow</em></h2>
+    </div>
+
+    <div id="testiWrap">
+        <!-- Loading state -->
+        <div class="testi-empty" id="testiLoading">&#9749; Loading reviews&hellip;</div>
+        <!-- Cards injected by JS -->
+        <div class="testi-track-wrap" id="testiTrackWrap" style="display:none">
+            <div class="testi-track" id="testiTrack"></div>
+        </div>
+        <div class="testi-nav" id="testiNav" style="display:none">
+            <button class="testi-btn" onclick="testiPrev()">&#8592;</button>
+            <div class="testi-dots" id="testiDots"></div>
+            <button class="testi-btn" onclick="testiNext()">&#8594;</button>
+        </div>
+    </div>
+</section>
+
+
+<!-- BOOKING -->
+<section class="booking" id="booking">
+    <div class="booking-inner">
+        <div class="booking-left">
+            <div class="section-label">Reservations</div>
+            <h2 class="section-title">Reserve Your<br><em>Perfect</em> Table</h2>
+            <div class="booking-info-list">
+                <div class="booking-info-item"><span class="booking-info-icon">&#x1F550;</span><div class="booking-info-text"><h4>Opening Hours</h4><p>Mon &ndash; Fri: 8:00 AM &ndash; 10:00 PM<br>Sat &ndash; Sun: 8:00 AM &ndash; 11:00 PM</p></div></div>
+                <div class="booking-info-item"><span class="booking-info-icon">&#x1F4CD;</span><div class="booking-info-text"><h4>Location</h4><p>12-A Hazratganj, Lucknow<br>Uttar Pradesh &ndash; 226 001</p></div></div>
+                <div class="booking-info-item"><span class="booking-info-icon">&#x1F4DE;</span><div class="booking-info-text"><h4>Phone Reservation</h4><p>+91 98765 43210<br>hello@aromaandco.in</p></div></div>
+                <div class="booking-info-item"><span class="booking-info-icon">&#x1F4A1;</span><div class="booking-info-text"><h4>Tips</h4><p>Book 48hrs ahead on weekends.<br>Private events: min. 24hr notice.</p></div></div>
+            </div>
+        </div>
+        <div class="booking-right">
+            <h3>Make a Reservation</h3>
+            <form id="bookingForm" onsubmit="submitBooking(event)">
+                <div class="form-row">
+                    <div class="form-group"><label>First Name</label><input type="text" id="b-fn" placeholder="Rohit" required></div>
+                    <div class="form-group"><label>Last Name</label><input type="text" id="b-ln" placeholder="Gupta" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Email</label><input type="email" id="b-email" placeholder="rohit@email.com" required></div>
+                    <div class="form-group"><label>Mobile</label><input type="tel" id="b-phone" placeholder="+91 8303920943" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Date</label><input type="date" id="b-date" required></div>
+                    <div class="form-group"><label>Guests</label><select id="b-guests" required><option value="">Select</option><option>1 Guest</option><option>2 Guests</option><option>3 Guests</option><option>4 Guests</option><option>5+ Guests</option></select></div>
+                </div>
+                <div class="form-group">
+                    <div class="time-slot-label">Available Time Slots</div>
+                    <div class="time-slots" id="bookingSlots">
+                        <div class="time-slot" onclick="selectSlot(this)">8:00 AM</div>
+                        <div class="time-slot" onclick="selectSlot(this)">9:30 AM</div>
+                        <div class="time-slot">11:00 AM</div>
+                        <div class="time-slot" onclick="selectSlot(this)">12:30 PM</div>
+                        <div class="time-slot">2:00 PM</div>
+                        <div class="time-slot" onclick="selectSlot(this)">3:30 PM</div>
+                        <div class="time-slot" onclick="selectSlot(this)">5:00 PM</div>
+                        <div class="time-slot">6:30 PM</div>
+                        <div class="time-slot" onclick="selectSlot(this)">8:00 PM</div>
+                    </div>
+                </div>
+                <div class="form-group"><label>Special Requests (Optional)</label><textarea id="b-special" rows="2" placeholder="Window table, dietary needs, birthday..."></textarea></div>
+                <button type="submit" class="form-submit" id="bookBtn">Confirm Reservation</button>
+            </form>
+            <div class="success-screen" id="successScreen">
+                <div class="success-icon">&#x2705;</div>
+                <h3>You&rsquo;re All Set!</h3>
+                <p>Your reservation has been confirmed. We look forward to seeing you!</p>
+                <div class="booking-ref" id="bookingRef">REF: #ARM-0000</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <!-- FEEDBACK SECTION -->
+    <div style="background:rgba(200,131,58,.06);border-top:1px solid rgba(212,184,150,.1);padding:60px 5%">
+        <div style="max-width:800px;margin:0 auto;text-align:center">
+            <div class="section-label" style="justify-content:center;margin-bottom:12px">Share Your Experience</div>
+            <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--cream);margin-bottom:8px">Leave Us <em style="color:var(--gold);font-style:italic">Feedback</em></h2>
+            <p style="font-size:.88rem;color:rgba(245,240,232,.45);margin-bottom:36px;line-height:1.7">Your thoughts help us brew a better experience every day.</p>
+
+            <form id="feedbackForm" onsubmit="submitFeedback(event)">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+                    <input type="text" id="fb-name" placeholder="Your name" required
+                           style="padding:12px 16px;background:rgba(245,240,232,.06);border:1px solid rgba(212,184,150,.18);border-radius:8px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;transition:border-color .3s"
+                           onfocus="this.style.borderColor='var(--caramel)'" onblur="this.style.borderColor='rgba(212,184,150,.18)'">
+                    <input type="email" id="fb-email" placeholder="Email (optional)"
+                           style="padding:12px 16px;background:rgba(245,240,232,.06);border:1px solid rgba(212,184,150,.18);border-radius:8px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;transition:border-color .3s"
+                           onfocus="this.style.borderColor='var(--caramel)'" onblur="this.style.borderColor='rgba(212,184,150,.18)'">
+                </div>
+
+                <!-- Star Rating -->
+                <div style="margin-bottom:16px;text-align:center">
+                    <div style="font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,240,232,.35);margin-bottom:10px">Rate Your Experience</div>
+                    <div id="starRow" style="display:inline-flex;gap:8px;font-size:2rem;cursor:pointer">
+                        <span class="star" data-v="1" onclick="setRating(1)" onmouseover="hoverRating(1)" onmouseout="resetHover()" style="opacity:.3;transition:all .15s;user-select:none">&#9733;</span>
+                        <span class="star" data-v="2" onclick="setRating(2)" onmouseover="hoverRating(2)" onmouseout="resetHover()" style="opacity:.3;transition:all .15s;user-select:none">&#9733;</span>
+                        <span class="star" data-v="3" onclick="setRating(3)" onmouseover="hoverRating(3)" onmouseout="resetHover()" style="opacity:.3;transition:all .15s;user-select:none">&#9733;</span>
+                        <span class="star" data-v="4" onclick="setRating(4)" onmouseover="hoverRating(4)" onmouseout="resetHover()" style="opacity:.3;transition:all .15s;user-select:none">&#9733;</span>
+                        <span class="star" data-v="5" onclick="setRating(5)" onmouseover="hoverRating(5)" onmouseout="resetHover()" style="opacity:.3;transition:all .15s;user-select:none">&#9733;</span>
+                    </div>
+                    <div id="ratingLabel" style="font-size:.78rem;color:var(--gold);margin-top:6px;min-height:1.2em"></div>
+                </div>
+
+                <textarea id="fb-msg" rows="3" placeholder="Tell us about your visit, the coffee, the ambience..." required
+                          style="width:100%;padding:12px 16px;background:rgba(245,240,232,.06);border:1px solid rgba(212,184,150,.18);border-radius:8px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;resize:vertical;transition:border-color .3s;margin-bottom:16px"
+                          onfocus="this.style.borderColor='var(--caramel)'" onblur="this.style.borderColor='rgba(212,184,150,.18)'"></textarea>
+
+                <button type="submit" id="fbBtn"
+                        style="padding:13px 36px;background:var(--caramel);color:var(--cream);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:background .3s">
+                    Send Feedback &#9749;
+                </button>
+            </form>
+
+            <div id="fbSuccess" style="display:none;text-align:center;padding:20px">
+                <div style="font-size:3rem;margin-bottom:12px">&#9749;</div>
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--cream);margin-bottom:6px">Thank You!</h3>
+                <p style="color:rgba(245,240,232,.5);font-size:.88rem">Your feedback helps us craft a better experience.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN FOOTER -->
+    <div style="background:var(--dark-roast);padding:72px 5% 0">
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;max-width:1200px;margin:0 auto 48px">
+            <!-- Brand -->
+            <div>
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700;color:var(--cream);margin-bottom:14px">Aroma<span style="color:var(--caramel);font-style:italic">&amp;Co.</span></h3>
+                <p style="font-size:.84rem;line-height:1.85;color:rgba(245,240,232,.4);max-width:260px;margin-bottom:24px">Artisan café &amp; roastery in the heart of Lucknow's Hazratganj. Crafting moments, one cup at a time since 2018.</p>
+                <!-- Contact info in footer -->
+                <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
+                    <a href="tel:+919876543210" style="font-size:.82rem;color:rgba(245,240,232,.45);display:flex;align-items:center;gap:8px;transition:color .2s" onmouseover="this.style.color='var(--latte)'" onmouseout="this.style.color='rgba(245,240,232,.45)'">&#128222; +91 8303920943</a>
+                    hello@aromaandco.in
+                    <span style="font-size:.82rem;color:rgba(245,240,232,.45);display:flex;align-items:center;gap:8px">&#128205; 12-A Hazratganj, Lucknow &ndash; 226 001</span>
+                </div>
+                <div style="display:flex;gap:10px">
+                    <div style="width:38px;height:38px;border:1px solid rgba(245,240,232,.12);display:flex;align-items:center;justify-content:center;font-size:1rem;border-radius:6px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--caramel)';this.style.background='rgba(200,131,58,.1)'" onmouseout="this.style.borderColor='rgba(245,240,232,.12)';this.style.background='transparent'">&#128248;</div>
+                    <div style="width:38px;height:38px;border:1px solid rgba(245,240,232,.12);display:flex;align-items:center;justify-content:center;font-size:1rem;border-radius:6px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--caramel)';this.style.background='rgba(200,131,58,.1)'" onmouseout="this.style.borderColor='rgba(245,240,232,.12)';this.style.background='transparent'">&#128038;</div>
+                    <div style="width:38px;height:38px;border:1px solid rgba(245,240,232,.12);display:flex;align-items:center;justify-content:center;font-size:1rem;border-radius:6px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--caramel)';this.style.background='rgba(200,131,58,.1)'" onmouseout="this.style.borderColor='rgba(245,240,232,.12)';this.style.background='transparent'">&#128188;</div>
+                    <div style="width:38px;height:38px;border:1px solid rgba(245,240,232,.12);display:flex;align-items:center;justify-content:center;font-size:1rem;border-radius:6px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--caramel)';this.style.background='rgba(200,131,58,.1)'" onmouseout="this.style.borderColor='rgba(245,240,232,.12)';this.style.background='transparent'">&#9654;&#65039;</div>
+                </div>
+            </div>
+
+            <!-- Discover -->
+            <div>
+                <h4 style="font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--caramel);margin-bottom:20px;font-weight:500">Discover</h4>
+                <ul style="list-style:none;display:flex;flex-direction:column;gap:10px">
+                    <li><a href="#about" style="font-size:.84rem;color:rgba(245,240,232,.42);transition:color .2s" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='rgba(245,240,232,.42)'">Our Story</a></li>
+                    <li><a href="#menu" style="font-size:.84rem;color:rgba(245,240,232,.42);transition:color .2s" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='rgba(245,240,232,.42)'">Full Menu</a></li>
+                    <li><a href="#experience" style="font-size:.84rem;color:rgba(245,240,232,.42);transition:color .2s" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='rgba(245,240,232,.42)'">Barista Workshop</a></li>
+                    <li><a href="#experience" style="font-size:.84rem;color:rgba(245,240,232,.42);transition:color .2s" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='rgba(245,240,232,.42)'">Private Events</a></li>
+                    <li><a href="#gallery" style="font-size:.84rem;color:rgba(245,240,232,.42);transition:color .2s" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='rgba(245,240,232,.42)'">Gallery</a></li>
+                </ul>
+            </div>
+
+            <!-- Visit -->
+            <div>
+                <h4 style="font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--caramel);margin-bottom:20px;font-weight:500">Visit</h4>
+                <ul style="list-style:none;display:flex;flex-direction:column;gap:10px">
+                    <li><a href="#booking" style="font-size:.84rem;color:rgba(245,240,232,.42);transition:color .2s" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='rgba(245,240,232,.42)'">Reserve a Table</a></li>
+                    <li><a href="/track" style="font-size:.84rem;color:rgba(245,240,232,.42);transition:color .2s" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='rgba(245,240,232,.42)'">Track Booking</a></li>
+                    <li><a href="#" style="font-size:.84rem;color:rgba(245,240,232,.42);transition:color .2s" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='rgba(245,240,232,.42)'">Get Directions</a></li>
+                    <li><a href="#" style="font-size:.84rem;color:rgba(245,240,232,.42);transition:color .2s" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='rgba(245,240,232,.42)'">Parking Info</a></li>
+                    <li><a href="#" style="font-size:.84rem;color:rgba(245,240,232,.42);transition:color .2s" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='rgba(245,240,232,.42)'">Accessibility</a></li>
+                </ul>
+            </div>
+
+            <!-- Support -->
+            <div>
+                <h4 style="font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--caramel);margin-bottom:20px;font-weight:500">Support</h4>
+                <ul style="list-style:none;display:flex;flex-direction:column;gap:10px">
+                    <li><a href="#" style="font-size:.84rem;color:rgba(245,240,232,.42);transition:color .2s" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='rgba(245,240,232,.42)'">Gift Cards</a></li>
+                    <li><a href="#" style="font-size:.84rem;color:rgba(245,240,232,.42);transition:color .2s" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='rgba(245,240,232,.42)'">Careers</a></li>
+                    <li><a href="#" style="font-size:.84rem;color:rgba(245,240,232,.42);transition:color .2s" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='rgba(245,240,232,.42)'">Contact Us</a></li>
+                    <li><a href="/login" style="font-size:.84rem;color:rgba(245,240,232,.42);transition:color .2s" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='rgba(245,240,232,.42)'">Staff Login</a></li>
+                </ul>
+                <!-- Hours -->
+                <div style="margin-top:24px;padding:16px;background:rgba(245,240,232,.04);border:1px solid rgba(212,184,150,.1);border-radius:8px">
+                    <div style="font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--caramel);margin-bottom:10px">Hours</div>
+                    <div style="font-size:.78rem;color:rgba(245,240,232,.5);line-height:1.8">Mon&ndash;Fri: 8AM &ndash; 10PM<br>Sat&ndash;Sun: 8AM &ndash; 11PM</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom bar -->
+        <div style="border-top:1px solid rgba(245,240,232,.07);padding:28px 0;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;flex-wrap:wrap;gap:12px">
+            <p style="font-size:.76rem;color:rgba(245,240,232,.28)">&copy; 2026 Aroma &amp; Co. All rights reserved.</p>
+            <div style="display:flex;gap:20px">
+                <a href="#" style="font-size:.74rem;color:rgba(245,240,232,.28);transition:color .2s" onmouseover="this.style.color='var(--latte)'" onmouseout="this.style.color='rgba(245,240,232,.28)'">Privacy Policy</a>
+                <a href="#" style="font-size:.74rem;color:rgba(245,240,232,.28);transition:color .2s" onmouseover="this.style.color='var(--latte)'" onmouseout="this.style.color='rgba(245,240,232,.28)'">Terms of Use</a>
+            </div>
+            <p style="font-size:.76rem;color:rgba(245,240,232,.28)">Made with &#9749; in Lucknow</p>
+        </div>
+    </div>
+</footer>
+
+<!-- CHATBOT BUTTON -->
+<div id="chatbot-toggle" onclick="toggleChat()">
+    <span class="toggle-icon">&#9749;</span>
+    <div class="chat-badge">1</div>
+</div>
+
+<!-- CHATBOT WINDOW -->
+<div id="chatbot-window">
+    <div class="chatbot-header">
+        <div class="chatbot-avatar">&#9749;</div>
+        <div class="chatbot-header-info">
+            <h4>Aroma Assistant</h4>
+            <div class="chatbot-status">Online &middot; Rasa + Gemini AI</div>
+        </div>
+        <button class="chatbot-close" onclick="toggleChat()">&#x2715;</button>
+    </div>
+    <div class="chatbot-messages" id="chatMessages"></div>
+    <div class="chat-suggestions" id="chatSuggestions">
+        <div class="suggestion-chip" onclick="sendQuick('Show me the full menu')">&#x1F37D; Full Menu</div>
+        <div class="suggestion-chip" onclick="sendQuick('Book a table')">&#x1F4C5; Book Table</div>
+        <div class="suggestion-chip" onclick="trackChip()">&#x1F50D; Track Booking</div>
+        <div class="suggestion-chip" onclick="sendQuick('What are your opening hours?')">&#x1F550; Hours</div>
+        <div class="suggestion-chip" onclick="sendQuick('Tell me about events')">&#x1F3B7; Events</div>
+        <div class="suggestion-chip" onclick="sendQuick('What is the WiFi password?')">&#x1F4F6; WiFi</div>
+    </div>
+    <div class="chatbot-input-area">
+        <input type="text" id="chat-input" placeholder="Ask me anything..." onkeypress="if(event.key==='Enter')sendChatMessage()">
+        <button id="chat-send" onclick="sendChatMessage()">&#x27A4;</button>
+    </div>
+</div>
+
+<!-- BOOKING MODAL (from chatbot) -->
+<div class="modal-overlay" id="bookingModal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+        <h2>Quick Reservation</h2>
+        <p class="sub">Fill in your details and we&rsquo;ll confirm within minutes.</p>
+        <form id="modalForm" onsubmit="submitModalBooking(event)">
+            <div class="form-row">
+                <div class="form-group"><label>Name</label><input type="text" id="m-name" placeholder="Your name" required></div>
+                <div class="form-group"><label>Phone</label><input type="tel" id="m-phone" placeholder="+91 98xxx" required></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Date</label><input type="date" id="m-date" required></div>
+                <div class="form-group"><label>Guests</label><select id="m-guests" required><option value="">Select</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5+</option></select></div>
+            </div>
+            <div class="form-group">
+                <div class="time-slot-label">Preferred Time</div>
+                <div class="time-slots">
+                    <div class="time-slot" onclick="selectSlot(this)">8:00 AM</div>
+                    <div class="time-slot" onclick="selectSlot(this)">10:00 AM</div>
+                    <div class="time-slot" onclick="selectSlot(this)">12:00 PM</div>
+                    <div class="time-slot">2:00 PM</div>
+                    <div class="time-slot" onclick="selectSlot(this)">4:00 PM</div>
+                    <div class="time-slot" onclick="selectSlot(this)">6:00 PM</div>
+                    <div class="time-slot" onclick="selectSlot(this)">8:00 PM</div>
+                </div>
+            </div>
+            <button type="submit" class="form-submit" style="margin-top:20px" id="modalBtn">Confirm Booking</button>
+        </form>
+        <div class="modal-success" id="modalSuccess">
+            <div class="success-icon">&#x1F389;</div>
+            <h3>Booking Confirmed!</h3>
+            <p>We&rsquo;ve saved your table. See you soon at Aroma &amp; Co.!</p>
+            <div class="booking-ref" id="modalRef">REF: #ARM-0000</div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+/* ============================================================
+   SCROLL RESTORATION
+============================================================ */
+if('scrollRestoration'in history)history.scrollRestoration='manual';
+window.addEventListener('load',function(){var s=sessionStorage.getItem('aromaY');if(s){window.scrollTo(0,parseInt(s,10));sessionStorage.removeItem('aromaY');}});
+var _st;window.addEventListener('scroll',function(){clearTimeout(_st);_st=setTimeout(function(){sessionStorage.setItem('aromaY',window.scrollY);},200);});
+
+/* ============================================================
+   CUSTOM CURSOR
+============================================================ */
+(function(){
+  var dot=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+  if(!dot||!ring)return;
+  var mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',function first(e){
+    mx=e.clientX;my=e.clientY;
+    dot.style.left=mx+'px';dot.style.top=my+'px';
+    ring.style.left=mx+'px';ring.style.top=my+'px';
+    rx=mx;ry=my;dot.style.opacity='1';ring.style.opacity='.6';
+    document.removeEventListener('mousemove',first);
+    document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  });
+  (function animR(){rx+=(mx-rx)*.14;ry+=(my-ry)*.14;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animR);})();
+  document.querySelectorAll('a,button,.btn-primary,.suggestion-chip,.time-slot,.menu-tab,.social-btn,#chatbot-toggle').forEach(function(el){
+    el.addEventListener('mouseenter',function(){dot.style.width='14px';dot.style.height='14px';dot.style.background='var(--gold)';ring.style.width='46px';ring.style.height='46px';ring.style.borderColor='var(--gold)';});
+    el.addEventListener('mouseleave',function(){dot.style.width='10px';dot.style.height='10px';dot.style.background='var(--caramel)';ring.style.width='36px';ring.style.height='36px';ring.style.borderColor='var(--caramel)';});
+  });
+})();
+
+/* ============================================================
+   NAV + FADE-UP
+============================================================ */
+window.addEventListener('scroll',function(){document.getElementById('mainNav').classList.toggle('scrolled',window.scrollY>50);});
+var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1});
+document.querySelectorAll('.fade-up').forEach(function(el){obs.observe(el);});
+
+/* ============================================================
+   MENU TABS
+============================================================ */
+function switchMenuTab(tab,btn){
+  document.querySelectorAll('.menu-tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.menu-panel').forEach(function(p){p.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+
+/* ============================================================
+   TIME SLOT PICKER
+============================================================ */
+function selectSlot(el){
+  if(el.classList.contains('unavailable'))return;
+  el.closest('.time-slots').querySelectorAll('.time-slot').forEach(function(s){s.classList.remove('selected');});
+  el.classList.add('selected');
+}
+
+/* ============================================================
+   DATE INPUTS
+============================================================ */
+var TODAY=new Date().toISOString().split('T')[0];
+document.getElementById('b-date').min=TODAY;
+document.getElementById('m-date').min=TODAY;
+
+/* ============================================================
+   BOOKING FORM  (main page)
+============================================================ */
+async function submitBooking(e){
+  e.preventDefault();
+  var fn=document.getElementById('b-fn').value.trim();
+  var ln=document.getElementById('b-ln').value.trim();
+  var em=document.getElementById('b-email').value.trim();
+  var ph=document.getElementById('b-phone').value.trim();
+  var dt=document.getElementById('b-date').value.trim();
+  var gs=document.getElementById('b-guests').value.trim();
+  var sp=document.getElementById('b-special').value.trim();
+  var sel=document.querySelector('#bookingSlots .time-slot.selected');
+  if(!sel){alert('Please select a time slot.');return;}
+  var time=sel.textContent.trim();
+  var btn=document.getElementById('bookBtn');
+  btn.textContent='Confirming…';btn.disabled=true;
+  try{
+    var r=await fetch('/api/reserve',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:fn+' '+ln,email:em,phone:ph,date:dt,time:time,guests:gs,special_requests:sp})});
+    var d=await r.json();
+    if(d.success){
+      document.getElementById('bookingRef').textContent='REF: '+d.ref;
+      document.getElementById('bookingForm').style.display='none';
+      document.getElementById('successScreen').style.display='block';
+    }else{alert('Error: '+(d.message||'Please try again.'));btn.textContent='Confirm Reservation';btn.disabled=false;}
+  }catch(err){
+    var ref='#ARM-'+Math.floor(Math.random()*9000+1000);
+    document.getElementById('bookingRef').textContent='REF: '+ref;
+    document.getElementById('bookingForm').style.display='none';
+    document.getElementById('successScreen').style.display='block';
+  }
+}
+
+/* ============================================================
+   MODAL
+============================================================ */
+function openModal(){document.getElementById('bookingModal').classList.add('open');}
+function closeModal(){document.getElementById('bookingModal').classList.remove('open');}
+document.getElementById('bookingModal').addEventListener('click',function(e){if(e.target===e.currentTarget)closeModal();});
+
+async function submitModalBooking(e){
+  e.preventDefault();
+  var nm=document.getElementById('m-name').value.trim();
+  var ph=document.getElementById('m-phone').value.trim();
+  var dt=document.getElementById('m-date').value.trim();
+  var gs=document.getElementById('m-guests').value.trim();
+  var sel=document.querySelector('#modalForm .time-slot.selected');
+  if(!sel){alert('Please select a time slot.');return;}
+  var time=sel.textContent.trim();
+  var btn=document.getElementById('modalBtn');
+  btn.textContent='Confirming…';btn.disabled=true;
+  var ref;
+  try{
+    var r=await fetch('/api/reserve',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:nm,phone:ph,date:dt,time:time,guests:gs,special_requests:''})});
+    var d=await r.json();
+    ref=d.success?d.ref:('#ARM-'+Math.floor(Math.random()*9000+1000));
+  }catch(err){ref='#ARM-'+Math.floor(Math.random()*9000+1000);}
+  document.getElementById('modalRef').textContent='REF: '+ref;
+  document.getElementById('modalForm').style.display='none';
+  document.getElementById('modalSuccess').style.display='block';
+  setTimeout(function(){
+    closeModal();
+    document.getElementById('modalSuccess').style.display='none';
+    document.getElementById('modalForm').style.display='block';
+    btn.textContent='Confirm Booking';btn.disabled=false;
+    addBotMsg('🎉 Reserved! Ref: <strong>'+ref+'</strong>\n\n🔗 Track: <a href="/track?ref='+ref+'" target="_blank" style="color:var(--gold)">/track</a>');
+  },2500);
+}
+
+/* ============================================================
+   FEEDBACK FORM
+============================================================ */
+var fbRating=0;
+var ratingLabels=['','Poor 😔','Fair 😐','Good 😊','Great 😄','Excellent! 🤩'];
+function setRating(v){
+  fbRating=v;
+  document.querySelectorAll('.star').forEach(function(s){
+    s.style.opacity=parseInt(s.dataset.v)<=v?'1':'.25';
+    s.style.color=parseInt(s.dataset.v)<=v?'var(--gold)':'inherit';
+  });
+  document.getElementById('ratingLabel').textContent=ratingLabels[v]||'';
+}
+function hoverRating(v){
+  document.querySelectorAll('.star').forEach(function(s){
+    s.style.opacity=parseInt(s.dataset.v)<=v?'1':'.25';
+  });
+}
+function resetHover(){setRating(fbRating);}
+async function submitFeedback(e){
+  e.preventDefault();
+  if(!fbRating){alert('Please select a star rating.');return;}
+  var name=document.getElementById('fb-name').value.trim();
+  var email=document.getElementById('fb-email').value.trim();
+  var msg=document.getElementById('fb-msg').value.trim();
+  var btn=document.getElementById('fbBtn');
+  btn.textContent='Sending…';btn.disabled=true;
+  try{
+    await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:name,email:email,rating:fbRating,message:msg})});
+  }catch(err){}
+  document.getElementById('feedbackForm').style.display='none';
+  document.getElementById('fbSuccess').style.display='block';
+}
+
+/* ============================================================
+   CHATBOT  —  Fast, Accurate, Conversational
+============================================================ */
+var chatOpen=false;
+var SENDER_ID='user_'+Date.now();
+var chatState='idle';
+var bookDraft={};
+
+function toggleChat(){
+  chatOpen=!chatOpen;
+  document.getElementById('chatbot-window').classList.toggle('open',chatOpen);
+  document.getElementById('chatbot-toggle').classList.toggle('open',chatOpen);
+  document.querySelector('.chat-badge').style.display='none';
+  if(chatOpen&&document.getElementById('chatMessages').children.length===0){
+    setTimeout(function(){
+      addBotMsg('Hello! ☕ Welcome to <strong>Aroma & Co.</strong>\n\nHow can I help you today?\n\n📅 Book a table\n🍽️ Menu & prices\n🔍 Track your booking\n🕐 Hours & location\n🎷 Events\n📶 WiFi password\n\nJust type your question!');
+    },250);
+  }
+}
+
+/* ── RENDER ── */
+function addBotMsg(text){
+  var msgs=document.getElementById('chatMessages');
+  var t=document.createElement('div');
+  t.className='chat-msg bot';
+  t.innerHTML='<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+  msgs.appendChild(t);msgs.scrollTop=msgs.scrollHeight;
+  // Faster delay: 300ms base + small variable
+  var delay=300+Math.min(text.length*0.8,500);
+  setTimeout(function(){
+    t.remove();
+    var d=document.createElement('div');
+    d.className='chat-msg bot';
+    d.innerHTML='<div class="chat-bubble">'+text.replace(/\n/g,'<br>')+'</div><div class="chat-time">'+getTime()+'</div>';
+    msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+  },delay);
+}
+function addUserMsg(text){
+  var msgs=document.getElementById('chatMessages');
+  var d=document.createElement('div');
+  d.className='chat-msg user';
+  d.innerHTML='<div class="chat-bubble">'+text+'</div><div class="chat-time">'+getTime()+'</div>';
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+}
+function getTime(){return new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});}
+
+/* ── SEND ── */
+async function sendChatMessage(){
+  var input=document.getElementById('chat-input');
+  var msg=input.value.trim();
+  if(!msg)return;
+  addUserMsg(msg);input.value='';
+  document.getElementById('chatSuggestions').style.display='none';
+  if(chatState!=='idle'){handleState(msg);return;}
+  var reply=getSmartReply(msg);
+  if(reply===null)return; // flow started itself
+  // Try Rasa first, use local if fails
+  try{
+    var r=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:msg,sender:SENDER_ID}),signal:AbortSignal.timeout(3000)});
+    var data=await r.json();
+    if(data&&data.length>0&&data[0].text){data.forEach(function(x){if(x.text)addBotMsg(x.text);});}
+    else{addBotMsg(reply);}
+  }catch(err){addBotMsg(reply);}
+}
+
+function sendQuick(msg){
+  addUserMsg(msg);
+  document.getElementById('chatSuggestions').style.display='none';
+  var reply=getSmartReply(msg);
+  if(reply!==null)addBotMsg(reply);
+}
+
+function trackChip(){
+  addUserMsg('Track my booking');
+  document.getElementById('chatSuggestions').style.display='none';
+  chatState='await_ref';
+  addBotMsg('🔍 Sure! Enter your booking reference.\n\nFormat: <strong>ARM-XXXX</strong> (e.g. ARM-4821)\n\nYou can find it in your confirmation email.');
+}
+
+/* ── STATE MACHINE ── */
+function handleState(msg){
+  var m=msg.trim();
+
+  /* TRACK */
+  if(chatState==='await_ref'){
+    var ref=m.toUpperCase().replace(/\s/g,'');
+    if(/^\d{4}$/.test(ref))ref='ARM-'+ref;
+    if(!/^ARM-\d{4}$/.test(ref)){
+      addBotMsg('⚠️ Format should be <strong>ARM-XXXX</strong> — 4 digits.\n\nExample: <strong>ARM-4821</strong>');
+      return;
+    }
+    chatState='idle';
+    addBotMsg('🔍 Looking up <strong>'+ref+'</strong>…');
+    fetch('/api/track/'+ref)
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(!d.success){addBotMsg('❌ No booking found for <strong>'+ref+'</strong>.\n\nDouble-check your reference or call <strong>+91 98765 43210</strong>.');return;}
+        var b=d.booking;
+        var icon=b.status==='Confirmed'?'✅':b.status==='Cancelled'?'❌':'⏳';
+        var today=new Date().toISOString().split('T')[0];
+        var note=b.date===today?'\n\n⭐ Your booking is <strong>TODAY</strong>! See you soon!':b.date<today?'\n\n(This booking date has passed.)':'';
+        addBotMsg(icon+' <strong>Booking Found!</strong>\n\n📋 Ref: <strong>'+b.ref+'</strong>\n📅 Date: <strong>'+b.date+'</strong>\n🕐 Time: <strong>'+b.time+'</strong>\n👥 Guests: <strong>'+b.guests+'</strong>\n📊 Status: <strong>'+b.status+'</strong>'+(b.special_req?'\n✨ Special: '+b.special_req:'')+note+'\n\n🔗 <a href="/track?ref='+b.ref+'" target="_blank" style="color:var(--gold)">Full tracking page →</a>');
+      })
+      .catch(function(){addBotMsg('⚠️ Server error. Visit <a href="/track" target="_blank" style="color:var(--gold)">/track</a> or call +91 8303920943.');});
+    return;
+  }
+
+  /* BOOKING FLOW */
+  if(chatState==='await_name'){
+    if(m.length<2){addBotMsg('Please enter your full name.');return;}
+    bookDraft.name=m;chatState='await_phone';
+    addBotMsg('👍 Got it, <strong>'+m+'</strong>!\n\nYour mobile number please? (for booking confirmation)');
+    return;
+  }
+  if(chatState==='await_phone'){
+    var ph=m.replace(/\s/g,'');
+    if(ph.length<8){addBotMsg('Please enter a valid mobile number (min 8 digits).');return;}
+    bookDraft.phone=ph;chatState='await_email';
+    addBotMsg('📱 <strong>'+ph+'</strong> — noted!\n\nYour email address? (we\'ll send confirmation)\n\nType <strong>skip</strong> to skip.');
+    return;
+  }
+  if(chatState==='await_email'){
+    if(m.toLowerCase()!=='skip'&&m.indexOf('@')===-1){addBotMsg('Please enter a valid email or type <strong>skip</strong>.');return;}
+    bookDraft.email=m.toLowerCase()==='skip'?'':m;
+    chatState='await_date';
+    var tom=new Date();tom.setDate(tom.getDate()+1);
+    addBotMsg('📧 '+(bookDraft.email?'<strong>'+bookDraft.email+'</strong> — noted!':'Skipped.')+'\n\nWhat date would you like to visit?\n\nFormat: <strong>YYYY-MM-DD</strong>\n(e.g. <strong>'+tom.toISOString().split('T')[0]+'</strong>)');
+    return;
+  }
+  if(chatState==='await_date'){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(m)||m<TODAY){
+      addBotMsg('⚠️ Please enter a valid future date.\n\nFormat: <strong>YYYY-MM-DD</strong>');
+      return;
+    }
+    bookDraft.date=m;chatState='await_guests';
+    addBotMsg('📅 <strong>'+m+'</strong> — perfect!\n\nHow many guests? (1–10)');
+    return;
+  }
+  if(chatState==='await_guests'){
+    var n=parseInt(m);
+    if(isNaN(n)||n<1||n>10){addBotMsg('Please enter a number between 1 and 10.');return;}
+    bookDraft.guests=n+' Guest'+(n>1?'s':'');
+    chatState='await_time';
+    addBotMsg('👥 <strong>'+bookDraft.guests+'</strong> — great!\n\nPreferred time?\n\n1️⃣ 8:00 AM\n2️⃣ 9:30 AM\n3️⃣ 11:00 AM\n4️⃣ 12:30 PM\n5️⃣ 2:00 PM\n6️⃣ 3:30 PM\n7️⃣ 5:00 PM\n8️⃣ 6:30 PM\n9️⃣ 8:00 PM\n\nReply with a number or type the time.');
+    return;
+  }
+  if(chatState==='await_time'){
+    var slots=['8:00 AM','9:30 AM','11:00 AM','12:30 PM','2:00 PM','3:30 PM','5:00 PM','6:30 PM','8:00 PM'];
+    var picked=null;
+    if(/^[1-9]$/.test(m.trim()))picked=slots[parseInt(m)-1];
+    else{for(var i=0;i<slots.length;i++){if(slots[i].toLowerCase().includes(m.toLowerCase())||m.toLowerCase().includes(slots[i].toLowerCase())){picked=slots[i];break;}}}
+    if(!picked){addBotMsg('Please reply with a number 1–9 or type the time (e.g. "5:00 PM").');return;}
+    bookDraft.time=picked;chatState='idle';
+    addBotMsg('⏳ Confirming your table…');
+    fetch('/api/reserve',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:bookDraft.name,phone:bookDraft.phone,email:bookDraft.email,date:bookDraft.date,time:bookDraft.time,guests:bookDraft.guests,special_requests:''})})
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(d.success){
+          addBotMsg('🎉 <strong>Table Reserved!</strong>\n\n📋 Ref: <strong>'+d.ref+'</strong>\n👤 Name: '+bookDraft.name+'\n📅 Date: '+bookDraft.date+'\n🕐 Time: '+bookDraft.time+'\n👥 Guests: '+bookDraft.guests+'\n\n📲 Track anytime:\n🔗 <a href="/track?ref='+d.ref+'" target="_blank" style="color:var(--gold)">/track?ref='+d.ref+'</a>');
+          bookDraft={};
+        }else{addBotMsg('⚠️ '+(d.message||'Could not book. Please use the form on this page or call +91 8303920943.'));}
+      })
+      .catch(function(){addBotMsg('⚠️ Server error. Use the booking form above or call +91 98765 43210.');});
+    return;
+  }
+  chatState='idle';
+  addBotMsg(getSmartReply(msg)||'I\'m here to help! ☕ Ask about menu, bookings, hours, or events.');
+}
+
+function startBookingFlow(){
+  chatState='await_name';bookDraft={};
+  addBotMsg('🍽️ Let\'s book your table!\n\nWhat\'s your <strong>full name</strong>?');
+}
+
+/* ============================================================
+   SMART REPLY ENGINE  —  No unicode issues, fast, accurate
+============================================================ */
+function getSmartReply(msg){
+  var m=msg.toLowerCase().trim();
+
+  /* TRACKING */
+  if(/track|my.*book|check.*book|booking.*status|arm-?\d{4}/i.test(m)){
+    var rm=msg.toUpperCase().match(/ARM-?(\d{4})/);
+    if(rm){var ref='ARM-'+rm[1];chatState='await_ref';setTimeout(function(){handleState(ref);},200);return 'Searching for <strong>'+ref+'</strong>…';}
+    chatState='await_ref';
+    return '🔍 Please enter your booking reference (format: <strong>ARM-XXXX</strong>).';
+  }
+
+  /* BOOKING */
+  if(/\bbook\b|reserv|table|seat/i.test(m)&&!/cancel|status|track|check/i.test(m)){
+    startBookingFlow();return null;
+  }
+
+  /* CANCEL */
+  if(/cancel/i.test(m)){
+    return '😔 To cancel your reservation:\n\n📞 Call: <strong>+91 98765 43210</strong>\n📧 Email: <strong>hello@aromaandco.in</strong>\n\nHave your <strong>ARM-XXXX</strong> reference ready.\nMinimum 2 hours notice for same-day cancellations.';
+  }
+
+  /* WIFI — ONLY wifi details, nothing extra */
+  if(/wifi|wi-fi|password|internet|network|connect/i.test(m)){
+    return '📶 <strong>Free WiFi:</strong>\n\nNetwork: <strong>AromaCo_Guests</strong>\nPassword: <strong>coffeeislife</strong>';
+  }
+
+  /* FULL MENU */
+  if(/full menu|all item|entire menu|show.*menu|what.*serve|see.*menu/i.test(m)){
+    return '☕ <strong>COFFEE</strong>\n• Espresso Classico — ₹120\n• Signature Latte — ₹220 ⭐\n• Cold Brew Reserve — ₹280\n• Honey Cardamom Flat White — ₹260\n• Matcha Cortado — ₹290\n• Dark Mocha — ₹250\n\n🥐 <strong>FOOD</strong>\n• Butter Croissant — ₹160\n• Truffle Mushroom Toast — ₹380 ⭐\n• Seasonal Grain Bowl — ₹350\n• Eggs Benedict — ₹420\n• Banana Cake — ₹290\n• Charcuterie Board — ₹680\n\n🌸 <strong>SPECIALS</strong>\n• Rose Saffron Latte — ₹320 🏆\n• Espresso Tonic — ₹300\n• Masala Spice Brew — ₹220\n• Blueberry Lavender Latte — ₹310\n• Hojicha Latte — ₹280\n• Brunch Set — ₹1,200\n\n🧃 <strong>DRINKS</strong>\n• Sparkling Lemonade — ₹180\n• Summer Berry Cooler — ₹220\n• Mango Lassi — ₹200\n• Darjeeling Tea — ₹160\n• Fresh Juice — ₹160\n• Kombucha — ₹240';
+  }
+
+  /* COFFEE — show ALL items with prices */
+  if(/coffee|espresso|latte|mocha|cortado|cold brew|flat white|cappuccino|americano/i.test(m)){
+    return '☕ <strong>Coffee Menu:</strong>\n\n• Espresso Classico — ₹120\n• Signature Latte — ₹220 ⭐\n• Cold Brew Reserve — ₹280\n• Honey Cardamom Flat White — ₹260\n• Matcha Cortado — ₹290 (Vegan)\n• Dark Mocha — ₹250\n\nAll coffees made with single-origin beans, roasted in-house daily. ☕';
+  }
+
+  /* FOOD — show ALL items with prices */
+  if(/food|eat|snack|pastry|breakfast|brunch|croissant|toast|bowl|benedict|cake|charcuterie/i.test(m)){
+    return '🥐 <strong>Food Menu:</strong>\n\n• Butter Croissant — ₹160 (Fresh Daily)\n• Truffle Mushroom Toast — ₹380 ⭐\n• Seasonal Grain Bowl — ₹350 🌿 (Vegan)\n• Eggs Benedict — ₹420\n• Brown Butter Banana Cake — ₹290\n• Cheese & Charcuterie Board — ₹680 (Sharing)\n\nAll food prepared fresh every morning! 🍳';
+  }
+
+  /* SPECIALS — show ALL with prices */
+  if(/special|saffron|rose|tonic|masala|lavender|hojicha|brunch/i.test(m)){
+    return '🌸 <strong>Specials Menu:</strong>\n\n• Rose Saffron Latte — ₹320 🏆 (Lucknow Special!)\n• Espresso Tonic — ₹300\n• Masala Spice Brew — ₹220\n• Blueberry Lavender Latte — ₹310 (Vegan)\n• Hojicha Latte — ₹280\n• Celebration Brunch Set — ₹1,200 (For 2)\n\nAsk us about today\'s seasonal additions! 🌸';
+  }
+
+  /* DRINKS — show ALL with prices */
+  if(/drink|juice|lemonade|lassi|kombucha|darjeeling|cooler|tea/i.test(m)){
+    return '🧃 <strong>Drinks Menu:</strong>\n\n• Sparkling Lemonade — ₹180\n• Summer Berry Cooler — ₹220\n• Alphonso Mango Lassi — ₹200\n• Single Estate Darjeeling — ₹160 (Organic)\n• Fresh Pressed Juice — ₹160\n• House Kombucha — ₹240 (Probiotic)\n\nAll drinks freshly made! 🍹';
+  }
+
+  /* EVENTS — detailed answer */
+  if(/event|jazz|music|workshop|barista|live|weekend|activity|programme/i.test(m)){
+    return '🎷 <strong>Events at Aroma & Co.:</strong>\n\n🎶 <strong>Live Jazz Nights</strong>\nEvery Friday & Saturday, 7–10 PM\nFree entry — just book your table!\n\n☕ <strong>Barista Workshop</strong>\nEvery Sunday at 10:00 AM\nLearn latte art, pour-over & espresso\nPrice: ₹799 per person\n\n🎂 <strong>Private Events</strong>\nBirthdays, corporate off-sites, dinners\nCapacity: up to 30 guests\nCall +91 98765 43210 to enquire\n\n📚 <strong>Book Nook</strong>\nStay & read anytime — free!\nDrip coffee refills at ₹80';
+  }
+
+  /* HOURS */
+  if(/hour|open|clos|timing|when.*open|what.*time/i.test(m)){
+    var now=new Date(),day=now.getDay(),hr=now.getHours();
+    var isWE=day===0||day===6,closeHr=isWE?23:22;
+    var isOpen=hr>=8&&hr<closeHr;
+    return '🕐 <strong>Opening Hours:</strong>\n\nMon–Fri: 8:00 AM – 10:00 PM\nSat–Sun: 8:00 AM – 11:00 PM\n\nLast orders 30 min before closing.\n\n'+(isOpen?'🟢 <strong>We are OPEN right now!</strong>':'🔴 <strong>We are currently closed.</strong>');
+  }
+
+  /* LOCATION */
+  if(/where|location|address|direction|map|reach|park/i.test(m)){
+    return '📍 <strong>Aroma & Co.</strong>\n12-A Hazratganj, Lucknow\nUttar Pradesh – 226 001\n\n🚗 Parking: Hazratganj Complex (2-min walk)\n💳 Cards, UPI & Cash accepted';
+  }
+
+  /* PRICE */
+  if(/price|cost|how much|rate|budget|expensive/i.test(m)){
+    return '💰 <strong>Price Range:</strong>\n\n☕ Coffee: ₹120 – ₹290\n🥐 Food: ₹160 – ₹680\n🌸 Specials: ₹220 – ₹1,200\n🧃 Drinks: ₹160 – ₹240';
+  }
+
+  /* VEGAN/DIETARY */
+  if(/vegan|vegetarian|gluten|oat|almond|soy|dairy|allerg/i.test(m)){
+    return '🌿 <strong>Dietary Options:</strong>\n\n✅ Vegan items available (Matcha Cortado, Grain Bowl, Blueberry Latte)\n✅ Gluten-free alternatives on request\n✅ Oat, almond & soy milk available\n\nJust inform your server and we\'ll accommodate! 😊';
+  }
+
+  /* PAYMENT */
+  if(/pay|upi|card|cash|gpay|phonepay|paytm/i.test(m)){
+    return '💳 <strong>Payment Methods:</strong>\n\n✅ UPI (GPay, PhonePe, Paytm)\n✅ Credit & Debit Cards\n✅ Cash\n\nNo minimum order for card payments!';
+  }
+
+  /* ABOUT */
+  if(/about|story|history|founded|since|who.*you/i.test(m)){
+    return '☕ <strong>About Aroma & Co.:</strong>\n\nFounded in 2018 in Hazratganj, Lucknow. We roast single-origin beans in-house every morning — sourced from Ethiopian highlands and Colombian valleys.\n\n7+ years of crafting moments, one cup at a time. 🌍';
+  }
+
+  /* CONTACT */
+  if(/contact|phone|call|email|help|support/i.test(m)){
+    return '📞 <strong>Contact Us:</strong>\n\n📞 +91 98765 43210\n📧 hello@aromaandco.in\n📍 12-A Hazratganj, Lucknow\n\nAvailable during café hours.';
+  }
+
+  /* RECOMMEND */
+  if(/recommend|best|must try|popular|favourite|top/i.test(m)){
+    return '⭐ <strong>Our Top Picks:</strong>\n\n1. Rose Saffron Latte ₹320 🏆 — Lucknow signature\n2. Signature Latte ₹220 ⭐ — bestselling coffee\n3. Truffle Mushroom Toast ₹380 ⭐ — bestselling food\n4. Cold Brew Reserve ₹280 — summer favourite\n5. Celebration Brunch Set ₹1,200 — perfect for 2';
+  }
+
+  /* DELIVERY */
+  if(/delivery|takeaway|order online|swiggy|zomato/i.test(m)){
+    return '🏠 We are currently <strong>dine-in only</strong>. No delivery or takeaway at this time.\n\nVisit us at 12-A Hazratganj, Lucknow! 📍';
+  }
+
+  /* GREETING */
+  if(/^(hello|hi|hey|namaste|hola|good morning|good afternoon|good evening|howdy)[\s!?.,]*$/i.test(m)){
+    return 'Hello! ☕ Great to have you here!\n\nHow can I help you today?\n\n• 🍽️ Menu & prices\n• 📅 Book a table\n• 🔍 Track booking\n• 🕐 Hours & location\n• 🎷 Events';
+  }
+
+  /* THANKS */
+  if(/thank|thanks|ty\b|great|awesome|perfect|wonderful/i.test(m)){
+    return 'You\'re most welcome! 😊 We love making your experience special. Is there anything else I can help with? ☕';
+  }
+
+  /* BYE */
+  if(/bye|goodbye|see you|take care|cya/i.test(m)){
+    return 'Goodbye! ☕ We can\'t wait to welcome you to Aroma & Co. Have a wonderful day! 👋';
+  }
+
+  /* HUMAN */
+  if(/human|agent|staff|real person|speak.*to/i.test(m)){
+    return '👤 Reach our team directly:\n\n📞 +91 8303920943\n📧 hello@aromaandco.in\n\nAvailable during café hours.';
+  }
+
+  /* DEFAULT */
+  return 'I\'m here to help! ☕\n\n🍽️ Menu | 📅 Book | 🔍 Track | 🕐 Hours | 🎷 Events | 📶 WiFi\n\nOr call us: <strong>+91 98765 43210</strong>';
+}
+
+/* ============================================================
+   TESTIMONIALS  —  Load featured feedback from server
+============================================================ */
+(function(){
+    var testiData=[],testiIdx=0,autoTimer=null;
+    var VISIBLE=window.innerWidth<768?1:window.innerWidth<1100?2:3;
+    function starHTML(r){var s='';for(var i=1;i<=5;i++)s+='<span class="testi-star'+(i>r?' empty':'')+'">&#9733;</span>';return s;}
+    function initials(n){var p=(n||'G').split(' ');return(p[0][0]+(p[1]?p[1][0]:'')).toUpperCase();}
+    function avatarColor(n){var c=['#c8833a','#7a8c6e','#c4603a','#d4a853','#6b3f1f'],sum=0;for(var i=0;i<n.length;i++)sum+=n.charCodeAt(i);return c[sum%c.length];}
+    function fmtDate(dt){try{return new Date(dt).toLocaleDateString('en-IN',{month:'short',year:'numeric'});}catch(e){return '';}}
+    function renderTesti(){
+        var track=document.getElementById('testiTrack');
+        var dots=document.getElementById('testiDots');
+        if(!track||!dots||!testiData.length)return;
+        track.innerHTML=testiData.map(function(t){
+            return '<div class="testi-card">'+
+                '<div class="testi-stars">'+starHTML(t.rating)+'</div>'+
+                '<p class="testi-text">&ldquo;'+t.message+'&rdquo;</p>'+
+                '<div class="testi-author">'+
+                '<div class="testi-avatar" style="background:'+avatarColor(t.name)+'">'+initials(t.name)+'</div>'+
+                '<div><div class="testi-name">'+t.name+'</div>'+
+                '<div class="testi-date">'+fmtDate(t.created_at)+'</div></div></div></div>';
+        }).join('');
+        var total=Math.max(1,testiData.length-VISIBLE+1);
+        dots.innerHTML=Array.from({length:total},function(_,i){
+            return '<div class="testi-dot'+(i===0?' active':'')+'" onclick="testiGoTo('+i+')"></div>';
+        }).join('');
+        goTo(0);
+        document.getElementById('testiTrackWrap').style.display='block';
+        document.getElementById('testiNav').style.display='flex';
+        document.getElementById('testiLoading').style.display='none';
+        startAuto();
+    }
+    function goTo(idx){
+        var maxIdx=Math.max(0,testiData.length-VISIBLE);
+        testiIdx=Math.max(0,Math.min(idx,maxIdx));
+        var tr=document.getElementById('testiTrack');
+        if(tr)tr.style.transform='translateX('+(-testiIdx*384)+'px)';
+        document.querySelectorAll('.testi-dot').forEach(function(d,i){d.classList.toggle('active',i===testiIdx);});
+    }
+    window.testiGoTo=goTo;
+    window.testiNext=function(){goTo(testiIdx+1>=Math.max(1,testiData.length-VISIBLE+1)?0:testiIdx+1);};
+    window.testiPrev=function(){goTo(testiIdx<=0?Math.max(0,testiData.length-VISIBLE):testiIdx-1);};
+    function startAuto(){clearInterval(autoTimer);autoTimer=setInterval(window.testiNext,4500);}
+    var wrap=document.getElementById('testiTrackWrap');
+    if(wrap){wrap.addEventListener('mouseenter',function(){clearInterval(autoTimer);});wrap.addEventListener('mouseleave',startAuto);}
+    fetch('/api/testimonials')
+        .then(function(r){return r.json();})
+        .then(function(d){
+            if(d.success&&d.testimonials&&d.testimonials.length>0){testiData=d.testimonials;renderTesti();}
+            else{document.getElementById('testiLoading').innerHTML='<span style="color:rgba(245,240,232,.25)">&#9749; No featured reviews yet.</span>';}
+        })
+        .catch(function(){document.getElementById('testiLoading').style.display='none';});
+})();
+</script>
+</body>
+</html>

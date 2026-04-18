@@ -1,0 +1,140 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - bot_challenge
+  - thank
+  - mood_great
+  - mood_unhappy
+  - human_agent
+  - reserve_table
+  - check_slots
+  - cancel_reservation
+  - provide_booking_ref
+  - menu_info
+  - ask_price
+  - check_availability
+  - cafe_info
+
+entities:
+  - product_name
+  - booking_date
+  - booking_time
+  - guest_count
+  - customer_name
+  - booking_ref
+
+slots:
+  product_name:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: product_name
+
+  customer_name:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: customer_name
+    - type: from_text
+      conditions:
+      - active_loop: reservation_form
+        requested_slot: customer_name
+
+  booking_date:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: booking_date
+    - type: from_text
+      conditions:
+      - active_loop: reservation_form
+        requested_slot: booking_date
+
+  booking_time:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: booking_time
+    - type: from_text
+      conditions:
+      - active_loop: reservation_form
+        requested_slot: booking_time
+
+  guest_count:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: guest_count
+    - type: from_text
+      conditions:
+      - active_loop: reservation_form
+        requested_slot: guest_count
+
+  booking_ref:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: booking_ref
+    - type: from_text
+      conditions:
+      - active_loop: cancel_form
+        requested_slot: booking_ref
+
+responses:
+
+  utter_goodbye:
+  - text: "Thank you for visiting Aroma & Co.! See you soon. ☕🌟"
+  - text: "Goodbye! Come visit us at Hazratganj. Take care! 👋"
+
+  utter_thank:
+  - text: "You're very welcome! Happy to help. 😊"
+  - text: "My pleasure — that's what I'm here for! 🌟"
+
+  utter_iamabot:
+  - text: "I'm the Aroma & Co. AI assistant, powered by Rasa + Gemini AI! 🤖☕ Here 24/7."
+
+  utter_ask_customer_name:
+  - text: "What name should I put the reservation under?"
+
+  utter_ask_booking_date:
+  - text: "What date would you like to visit? (e.g. 'tomorrow' or '25 March')"
+
+  utter_ask_booking_time:
+  - text: "What time works best?\n\nSlots: 8:00 AM | 9:30 AM | 11:00 AM | 12:30 PM | 2:00 PM | 3:30 PM | 5:00 PM | 6:30 PM | 8:00 PM"
+
+  utter_ask_guest_count:
+  - text: "How many guests will be joining you?"
+
+  utter_ask_booking_ref:
+  - text: "Please share your booking reference number (e.g. ARM-1234)."
+
+  utter_default:
+  - text: "I'm here to help with anything about Aroma & Co.! ☕\n\nAsk me about:\n📅 Table reservations\n☕ Menu & prices\n🕐 Hours & location\n🎷 Events\n📶 WiFi"
+
+actions:
+  - action_reserve_table
+  - action_check_slots
+  - action_cancel_reservation
+  - action_gemini_response
+  - action_human_handoff
+  - validate_reservation_form
+
+forms:
+  reservation_form:
+    required_slots:
+      - customer_name
+      - booking_date
+      - booking_time
+      - guest_count
+
+  cancel_form:
+    required_slots:
+      - booking_ref
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

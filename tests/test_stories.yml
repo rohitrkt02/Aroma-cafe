@@ -1,0 +1,70 @@
+version: "3.1"
+
+stories:
+
+- story: test greet and goodbye
+  steps:
+  - user: |
+      hello
+    intent: greet
+  - action: action_gemini_response
+  - user: |
+      goodbye
+    intent: goodbye
+  - action: utter_goodbye
+
+- story: test bot challenge
+  steps:
+  - user: |
+      are you a bot?
+    intent: bot_challenge
+  - action: utter_iamabot
+
+- story: test thank you
+  steps:
+  - user: |
+      thanks a lot
+    intent: thank
+  - action: utter_thank
+
+- story: test table booking
+  steps:
+  - user: |
+      I want to book a table
+    intent: reserve_table
+  - action: reservation_form
+
+- story: test check slots
+  steps:
+  - user: |
+      what slots are available?
+    intent: check_slots
+  - action: action_check_slots
+
+- story: test menu info
+  steps:
+  - user: |
+      what's on the menu?
+    intent: menu_info
+  - action: action_gemini_response
+
+- story: test price query
+  steps:
+  - user: |
+      how much is a latte?
+    intent: ask_price
+  - action: action_gemini_response
+
+- story: test cafe hours
+  steps:
+  - user: |
+      what are your opening hours?
+    intent: cafe_info
+  - action: action_gemini_response
+
+- story: test human handoff
+  steps:
+  - user: |
+      I want to talk to a human
+    intent: human_agent
+  - action: action_human_handoff

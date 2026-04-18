@@ -1,0 +1,85 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+*.log
+
+# Virtual environment
+venv/
+.env/
+env/
+.venv/
+ENV/
+
+# Rasa
+models/
+results/
+logs/
+events.db
+rasa.db
+rasa.lock
+.rasa/
+.cache/
+.tmp/
+*.tmp
+*.bak
+
+# Database (keep schema, not data)
+database/*.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Archives
+*.tar.gz
+*.zip
+
+# API Keys — NEVER commit
+.env
+secrets.yml
+
+# Virtual environment - NEVER push this (500MB+)
+venv/
+.venv/
+
+# Rasa trained model - very large (100MB+)
+models/
+
+# Database file - contains personal data
+database/aroma.db
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Rasa cache
+.rasa/
+
+# Environment/secrets - NEVER push API keys
+.env
+*.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code settings
+.vscode/
+
+# Logs
+*.log
+logs/
+.babel.json

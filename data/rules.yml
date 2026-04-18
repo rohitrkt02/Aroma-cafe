@@ -1,0 +1,99 @@
+version: "3.1"
+
+rules:
+
+# ── GEMINI-HANDLED ────────────────────────────────────────
+- rule: Greet with Gemini
+  steps:
+  - intent: greet
+  - action: action_gemini_response
+
+- rule: Menu info via Gemini
+  steps:
+  - intent: menu_info
+  - action: action_gemini_response
+
+- rule: Ask price via Gemini
+  steps:
+  - intent: ask_price
+  - action: action_gemini_response
+
+- rule: Check item availability via Gemini
+  steps:
+  - intent: check_availability
+  - action: action_gemini_response
+
+- rule: Café info via Gemini
+  steps:
+  - intent: cafe_info
+  - action: action_gemini_response
+
+- rule: Mood great via Gemini
+  steps:
+  - intent: mood_great
+  - action: action_gemini_response
+
+- rule: Mood unhappy via Gemini
+  steps:
+  - intent: mood_unhappy
+  - action: action_gemini_response
+
+# ── RASA-HANDLED (static/structured) ──────────────────────
+- rule: Say goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- rule: Bot challenge
+  steps:
+  - intent: bot_challenge
+  - action: utter_iamabot
+
+- rule: Thank you
+  steps:
+  - intent: thank
+  - action: utter_thank
+
+- rule: Human escalation
+  steps:
+  - intent: human_agent
+  - action: action_human_handoff
+
+- rule: Check time slots
+  steps:
+  - intent: check_slots
+  - action: action_check_slots
+
+# ── RESERVATION FORM ──────────────────────────────────────
+- rule: Activate reservation form
+  steps:
+  - intent: reserve_table
+  - action: reservation_form
+  - active_loop: reservation_form
+
+- rule: Submit reservation form
+  condition:
+  - active_loop: reservation_form
+  steps:
+  - action: reservation_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_reserve_table
+
+# ── CANCEL FORM ───────────────────────────────────────────
+- rule: Activate cancel form
+  steps:
+  - intent: cancel_reservation
+  - action: cancel_form
+  - active_loop: cancel_form
+
+- rule: Submit cancel form
+  condition:
+  - active_loop: cancel_form
+  steps:
+  - action: cancel_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_cancel_reservation

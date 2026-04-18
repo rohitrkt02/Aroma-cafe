@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Aroma &amp; Co. — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--espresso:#2c1a0e;--coffee:#6b3f1f;--caramel:#c8833a;--gold:#d4a853;--cream:#f5f0e8;--warm:#faf8f4;--latte:#d4b896;--dark:#1a0f07;--sage:#7a8c6e;--red:#c4603a;--green:#4caf7d}
+  html{scroll-behavior:smooth}
+  body{font-family:"DM Sans",sans-serif;background:var(--warm);color:var(--espresso);min-height:100vh;display:flex}
+
+  /* ── SIDEBAR ── */
+  .sidebar{width:240px;min-height:100vh;background:var(--dark);display:flex;flex-direction:column;padding:28px 0;position:fixed;left:0;top:0;bottom:0;z-index:100;box-shadow:4px 0 20px rgba(0,0,0,.2)}
+  .sb-brand{padding:0 24px 28px;border-bottom:1px solid rgba(212,184,150,.08)}
+  .sb-brand h2{font-family:"Playfair Display",serif;font-size:1.4rem;font-weight:900;color:var(--cream)}
+  .sb-brand h2 span{color:var(--caramel);font-style:italic}
+  .sb-brand p{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(245,240,232,.3);margin-top:4px}
+  .sb-user{padding:20px 24px;border-bottom:1px solid rgba(212,184,150,.08);display:flex;align-items:center;gap:12px}
+  .sb-avatar{width:38px;height:38px;background:var(--caramel);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+  .sb-user-info h4{font-size:.88rem;color:var(--cream);font-weight:500}
+  .sb-user-info p{font-size:.7rem;color:rgba(245,240,232,.4);margin-top:2px}
+  .role-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+  .role-badge.admin{background:var(--gold);color:var(--dark)}
+  .role-badge.staff{background:var(--sage);color:#fff}
+  .sb-nav{padding:16px 0;flex:1}
+  .sb-link{display:flex;align-items:center;gap:12px;padding:12px 24px;font-size:.83rem;color:rgba(245,240,232,.5);cursor:pointer;transition:all .2s;text-decoration:none;border-left:3px solid transparent}
+  .sb-link:hover{color:var(--cream);background:rgba(245,240,232,.04);border-left-color:var(--caramel)}
+  .sb-link.active{color:var(--cream);background:rgba(200,131,58,.08);border-left-color:var(--caramel)}
+  .sb-link .icon{font-size:1.1rem;width:22px;text-align:center}
+  .sb-section{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,240,232,.2);padding:16px 24px 6px}
+  .sb-logout{padding:16px 24px;margin-top:auto;border-top:1px solid rgba(212,184,150,.08)}
+  .logout-btn{display:flex;align-items:center;gap:10px;color:rgba(245,240,232,.4);font-size:.82rem;cursor:pointer;transition:color .2s;text-decoration:none;background:none;border:none;font-family:inherit;width:100%}
+  .logout-btn:hover{color:var(--red)}
+
+  /* ── MAIN ── */
+  .main{margin-left:240px;flex:1;padding:32px;min-height:100vh}
+  .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px}
+  .page-title h1{font-family:"Playfair Display",serif;font-size:1.8rem;font-weight:700;color:var(--espresso)}
+  .page-title p{font-size:.82rem;color:var(--coffee);opacity:.6;margin-top:4px}
+  .live-indicator{display:flex;align-items:center;gap:8px;font-size:.75rem;color:var(--sage);background:rgba(122,140,110,.08);padding:6px 14px;border-radius:20px;border:1px solid rgba(122,140,110,.2)}
+  .live-dot{width:8px;height:8px;background:var(--sage);border-radius:50%;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.85)}}
+
+  /* ── STAT CARDS ── */
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+  .stat-card{background:#fff;border:1px solid rgba(212,184,150,.2);border-radius:12px;padding:24px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+  .stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(44,26,14,.08)}
+  .stat-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+  .stat-card.total::before{background:var(--caramel)}
+  .stat-card.confirmed::before{background:var(--green)}
+  .stat-card.cancelled::before{background:var(--red)}
+  .stat-card.today::before{background:var(--gold)}
+  .stat-label{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--coffee);opacity:.6;margin-bottom:10px}
+  .stat-value{font-family:"Playfair Display",serif;font-size:2.6rem;font-weight:900;line-height:1;color:var(--espresso)}
+  .stat-icon{position:absolute;top:20px;right:20px;font-size:2rem;opacity:.12}
+  .stat-trend{font-size:.72rem;color:var(--sage);margin-top:8px}
+
+  /* ── SECTION TITLES ── */
+  .section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .section-head h2{font-family:"Playfair Display",serif;font-size:1.2rem;font-weight:700;color:var(--espresso)}
+  .section-head p{font-size:.78rem;color:var(--coffee);opacity:.5}
+
+  /* ── TABLE ── */
+  .table-card{background:#fff;border:1px solid rgba(212,184,150,.2);border-radius:12px;overflow:hidden;margin-bottom:28px}
+  .table-toolbar{padding:16px 20px;border-bottom:1px solid rgba(212,184,150,.12);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .search-box{flex:1;min-width:180px;position:relative}
+  .search-box input{width:100%;padding:9px 12px 9px 36px;border:1px solid rgba(212,184,150,.3);border-radius:8px;font-size:.82rem;font-family:inherit;outline:none;background:var(--warm);transition:border-color .2s}
+  .search-box input:focus{border-color:var(--caramel)}
+  .search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:.9rem;opacity:.4}
+  .filter-select{padding:9px 12px;border:1px solid rgba(212,184,150,.3);border-radius:8px;font-size:.82rem;font-family:inherit;outline:none;background:var(--warm);cursor:pointer}
+  .export-btn{padding:9px 16px;background:var(--espresso);color:var(--cream);border:none;border-radius:8px;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:inherit;transition:background .2s}
+  .export-btn:hover{background:var(--caramel)}
+  .date-filter{padding:9px 12px;border:1px solid rgba(212,184,150,.3);border-radius:8px;font-size:.82rem;font-family:inherit;outline:none;background:var(--warm)}
+  table{width:100%;border-collapse:collapse}
+  th{padding:12px 16px;text-align:left;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--coffee);opacity:.6;background:var(--warm);border-bottom:1px solid rgba(212,184,150,.15);white-space:nowrap}
+  td{padding:14px 16px;font-size:.84rem;border-bottom:1px solid rgba(212,184,150,.08);color:var(--espresso);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(245,240,232,.5)}
+  .ref-tag{font-family:monospace;background:var(--espresso);color:var(--gold);padding:3px 10px;border-radius:4px;font-size:.78rem;font-weight:700}
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+  .badge.confirmed{background:rgba(76,175,125,.12);color:#2e7d55;border:1px solid rgba(76,175,125,.25)}
+  .badge.cancelled{background:rgba(196,96,58,.1);color:var(--red);border:1px solid rgba(196,96,58,.2)}
+  .badge.pending{background:rgba(212,168,83,.12);color:#8a6800;border:1px solid rgba(212,168,83,.25)}
+  .action-btns{display:flex;gap:6px}
+  .act-btn{padding:5px 12px;border:none;border-radius:6px;font-size:.73rem;cursor:pointer;font-family:inherit;font-weight:500;transition:all .2s}
+  .act-btn.cancel{background:rgba(196,96,58,.1);color:var(--red)}
+  .act-btn.cancel:hover{background:var(--red);color:#fff}
+  .act-btn.confirm{background:rgba(76,175,125,.1);color:#2e7d55}
+  .act-btn.confirm:hover{background:var(--green);color:#fff}
+  .act-btn.view{background:rgba(44,26,14,.06);color:var(--espresso)}
+  .act-btn.view:hover{background:var(--espresso);color:var(--cream)}
+  .no-data{padding:40px;text-align:center;color:var(--coffee);opacity:.4;font-size:.9rem}
+
+  /* ── TODAY QUICK VIEW ── */
+  .today-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:28px}
+  .today-card{background:#fff;border:1px solid rgba(212,184,150,.2);border-radius:10px;padding:18px 20px;display:flex;justify-content:space-between;align-items:flex-start;transition:box-shadow .2s}
+  .today-card:hover{box-shadow:0 4px 16px rgba(44,26,14,.08)}
+  .tc-info h4{font-size:.9rem;font-weight:600;color:var(--espresso);margin-bottom:3px}
+  .tc-info p{font-size:.75rem;color:var(--coffee);opacity:.6}
+  .tc-time{text-align:right}
+  .tc-time .time{font-family:"Playfair Display",serif;font-size:1.1rem;font-weight:700;color:var(--caramel)}
+  .tc-time .guests{font-size:.72rem;color:var(--coffee);opacity:.5;margin-top:2px}
+
+  /* ── ADMIN ONLY BANNER ── */
+  .admin-only{display:none}
+  .is-admin .admin-only{display:block}
+  .staff-only{display:none}
+  .is-staff .staff-only{display:block}
+  .read-only-notice{background:rgba(212,168,83,.1);border:1px solid rgba(212,168,83,.25);border-radius:8px;padding:10px 16px;font-size:.8rem;color:#7a5c00;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+  /* ── UPCOMING CHART ── */
+  .upcoming-bars{display:flex;gap:8px;align-items:flex-end;height:80px;margin-top:12px}
+  .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+  .bar{width:100%;background:var(--caramel);border-radius:4px 4px 0 0;transition:height .5s ease;min-height:4px;max-height:72px}
+  .bar-label{font-size:.62rem;color:var(--coffee);opacity:.5;text-align:center}
+  .bar-val{font-size:.65rem;font-weight:600;color:var(--caramel)}
+
+  /* ── REFRESH BTN ── */
+  .refresh-btn{padding:7px 14px;background:rgba(200,131,58,.1);color:var(--caramel);border:1px solid rgba(200,131,58,.2);border-radius:8px;font-size:.75rem;cursor:pointer;font-family:inherit;transition:all .2s}
+  .refresh-btn:hover{background:var(--caramel);color:var(--cream)}
+
+  /* ── TOAST ── */
+  #toast{position:fixed;bottom:28px;right:28px;background:var(--espresso);color:var(--cream);padding:12px 20px;border-radius:8px;font-size:.82rem;box-shadow:0 8px 32px rgba(0,0,0,.2);transform:translateY(60px);opacity:0;transition:all .3s;z-index:9999;border-left:3px solid var(--caramel)}
+  #toast.show{transform:translateY(0);opacity:1}
+
+  /* ── MODAL (reservation detail) ── */
+  .modal-bg{position:fixed;inset:0;background:rgba(26,15,7,.6);z-index:5000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px)}
+  .modal-bg.open{opacity:1;pointer-events:all}
+  .modal-box{background:var(--warm);border-radius:12px;width:90%;max-width:480px;padding:36px;position:relative;transform:translateY(20px);transition:transform .3s}
+  .modal-bg.open .modal-box{transform:translateY(0)}
+  .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--coffee);transition:color .2s}
+  .modal-close:hover{color:var(--red)}
+  .detail-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(212,184,150,.15);font-size:.86rem}
+  .detail-row:last-child{border-bottom:none}
+  .detail-row .key{color:var(--coffee);opacity:.6;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em}
+  .detail-row .val{font-weight:600;color:var(--espresso)}
+
+  @media(max-width:900px){
+    .sidebar{display:none}
+    .main{margin-left:0}
+    .stat-grid{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body class="{% if role == 'admin' %}is-admin{% else %}is-staff{% endif %}">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-brand">
+    <h2>Aroma<span>&amp;Co.</span></h2>
+    <p>Staff Dashboard</p>
+  </div>
+  <div class="sb-user">
+    <div class="sb-avatar">{{ avatar }}</div>
+    <div class="sb-user-info">
+      <h4>{{ username }}</h4>
+      <div class="role-badge {{ role }}">{{ role }}</div>
+    </div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section">Navigation</div>
+    <a class="sb-link active" onclick="showSection('overview')"><span class="icon">&#x1F4CA;</span>Overview</a>
+    <a class="sb-link" onclick="showSection('today')"><span class="icon">&#x1F4C5;</span>Today's Bookings</a>
+    <a class="sb-link" onclick="showSection('all')"><span class="icon">&#x1F4CB;</span>All Reservations</a>
+    <div class="sb-section admin-only">Admin Tools</div>
+    <a class="sb-link admin-only" onclick="showSection('upcoming')"><span class="icon">&#x1F4C8;</span>Upcoming Week</a>
+    <a class="sb-link admin-only" onclick="showSection('feedback')"><span class="icon">&#x2B50;</span>Customer Feedback</a>
+  </div>
+  <div class="sb-logout">
+    <a href="/logout" class="logout-btn">
+      <span>&#x1F6AA;</span> Sign Out
+    </a>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>Good {% if today %}{{ today[:10] }}{% endif %} &#9749;</h1>
+      <p>{{ username }} &middot; {{ role | capitalize }} Access &middot; Aroma &amp; Co., Lucknow</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <div class="live-indicator">
+        <div class="live-dot"></div>
+        <span>Live &bull; <span id="lastRefresh">just now</span></span>
+      </div>
+      <button class="refresh-btn" onclick="refreshStats()">&#x27F3; Refresh</button>
+    </div>
+  </div>
+
+  <!-- READ-ONLY NOTICE for staff -->
+  {% if role == "staff" %}
+  <div class="read-only-notice">
+    &#x1F512; You have <strong>read-only</strong> access &mdash; today's reservations only. Contact admin to make changes.
+  </div>
+  {% endif %}
+
+  <!-- ═══ SECTION: OVERVIEW ═══ -->
+  <div id="sec-overview" class="section">
+    <!-- Stat Cards -->
+    <div class="stat-grid">
+      <div class="stat-card total">
+        <div class="stat-label">Total Bookings</div>
+        <div class="stat-value" id="st-total">{{ total }}</div>
+        <div class="stat-icon">&#x1F4DA;</div>
+        <div class="stat-trend">All time reservations</div>
+      </div>
+      <div class="stat-card confirmed">
+        <div class="stat-label">Confirmed</div>
+        <div class="stat-value" id="st-confirmed">{{ confirmed }}</div>
+        <div class="stat-icon">&#x2705;</div>
+        <div class="stat-trend">Active reservations</div>
+      </div>
+      <div class="stat-card cancelled">
+        <div class="stat-label">Cancelled</div>
+        <div class="stat-value" id="st-cancelled">{{ cancelled }}</div>
+        <div class="stat-icon">&#x274C;</div>
+        <div class="stat-trend">Cancelled bookings</div>
+      </div>
+      <div class="stat-card today">
+        <div class="stat-label">Booked Today</div>
+        <div class="stat-value" id="st-today">{{ today_count }}</div>
+        <div class="stat-icon">&#x1F4C5;</div>
+        <div class="stat-trend">New today</div>
+      </div>
+    </div>
+
+    <!-- Today Quick Cards -->
+    <div class="section-head">
+      <div><h2>Today's Reservations</h2><p>{{ today }}</p></div>
+      <button class="refresh-btn" onclick="loadTodayCards()">&#x27F3;</button>
+    </div>
+    <div class="today-grid" id="todayCards">
+      {% if today_res %}
+        {% for r in today_res %}
+        <div class="today-card">
+          <div class="tc-info">
+            <h4>{{ r.name }}</h4>
+            <p>{{ r.ref }} &bull; {{ r.guests }} guests</p>
+            {% if r.special_req %}<p style="margin-top:4px;font-size:.72rem;color:#c8833a">&#x2728; {{ r.special_req }}</p>{% endif %}
+            <div style="margin-top:6px"><span class="badge {{ r.status | lower }}">{{ r.status }}</span></div>
+          </div>
+          <div class="tc-time">
+            <div class="time">{{ r.time }}</div>
+            <div class="guests">{{ r.guests }} pax</div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--coffee);opacity:.45;font-size:.9rem">
+          &#x2615; No reservations for today yet.
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Recent Bookings (admin only) -->
+    <div class="admin-only">
+      <div class="section-head">
+        <div><h2>Recent Bookings</h2><p>Last 20 reservations</p></div>
+      </div>
+      <div class="table-card">
+        <table>
+          <thead><tr><th>Ref</th><th>Name</th><th>Date</th><th>Time</th><th>Guests</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+          {% if recent %}
+            {% for r in recent %}
+            <tr id="row-{{ r.ref }}">
+              <td><span class="ref-tag">{{ r.ref }}</span></td>
+              <td><strong>{{ r.name }}</strong>{% if r.email %}<br><span style="font-size:.73rem;opacity:.5">{{ r.email }}</span>{% endif %}</td>
+              <td>{{ r.date }}</td>
+              <td>{{ r.time }}</td>
+              <td>{{ r.guests }}</td>
+              <td><span class="badge {{ r.status | lower }}">{{ r.status }}</span></td>
+              <td>
+                <div class="action-btns">
+                  <button class="act-btn view" onclick="viewRes('{{ r.ref }}')">View</button>
+                  {% if r.status == "Confirmed" %}
+                  <button class="act-btn cancel" onclick="cancelRes('{{ r.ref }}')">Cancel</button>
+                  {% else %}
+                  <button class="act-btn confirm" onclick="confirmRes('{{ r.ref }}')">Restore</button>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="7" class="no-data">No reservations found.</td></tr>
+          {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div><!-- /sec-overview -->
+
+  <!-- ═══ SECTION: TODAY ═══ -->
+  <div id="sec-today" class="section" style="display:none">
+    <div class="section-head">
+      <div><h2>Today's Bookings</h2><p id="todayDateLabel">{{ today }}</p></div>
+      <div style="display:flex;gap:10px">
+        <input type="date" id="dayPicker" class="date-filter" value="{{ today }}" onchange="loadDayTable()">
+        <button class="refresh-btn" onclick="loadDayTable()">&#x27F3; Refresh</button>
+      </div>
+    </div>
+    <div class="table-card">
+      <table>
+        <thead><tr><th>Ref</th><th>Name</th><th>Time</th><th>Guests</th><th>Special</th><th>Status</th>{% if role == "admin" %}<th>Actions</th>{% endif %}</tr></thead>
+        <tbody id="dayTableBody">
+          {% if today_res %}
+            {% for r in today_res %}
+            <tr id="day-{{ r.ref }}">
+              <td><span class="ref-tag">{{ r.ref }}</span></td>
+              <td><strong>{{ r.name }}</strong></td>
+              <td>{{ r.time }}</td>
+              <td>{{ r.guests }}</td>
+              <td style="font-size:.78rem;opacity:.7">{{ r.special_req or "—" }}</td>
+              <td><span class="badge {{ r.status | lower }}">{{ r.status }}</span></td>
+              {% if role == "admin" %}
+              <td>
+                <div class="action-btns">
+                  {% if r.status == "Confirmed" %}
+                  <button class="act-btn cancel" onclick="cancelRes('{{ r.ref }}',true)">Cancel</button>
+                  {% else %}
+                  <button class="act-btn confirm" onclick="confirmRes('{{ r.ref }}',true)">Restore</button>
+                  {% endif %}
+                </div>
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="7" class="no-data">No bookings for today.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div><!-- /sec-today -->
+
+  <!-- ═══ SECTION: ALL RESERVATIONS ═══ -->
+  <div id="sec-all" class="section" style="display:none">
+    <div class="section-head">
+      <div><h2>All Reservations</h2><p>Complete booking list</p></div>
+      <div style="display:flex;gap:10px" class="admin-only">
+        <button class="export-btn" onclick="exportCSV()">&#x1F4E5; Export CSV</button>
+      </div>
+    </div>
+    <div class="table-card">
+      <div class="table-toolbar">
+        <div class="search-box">
+          <span class="search-icon">&#x1F50D;</span>
+          <input type="text" id="searchInput" placeholder="Search name, ref, email..." oninput="filterTable()">
+        </div>
+        <select class="filter-select" id="statusFilter" onchange="loadAllTable()">
+          <option value="">All Statuses</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+        <input type="date" id="allDateFilter" class="date-filter" onchange="loadAllTable()">
+        <button class="refresh-btn" onclick="loadAllTable()">&#x27F3;</button>
+      </div>
+      <table>
+        <thead><tr><th>Ref</th><th>Name</th><th>Contact</th><th>Date</th><th>Time</th><th>Guests</th><th>Status</th>{% if role == "admin" %}<th>Actions</th>{% endif %}</tr></thead>
+        <tbody id="allTableBody">
+          <tr><td colspan="8" class="no-data">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div><!-- /sec-all -->
+
+  <!-- ═══ SECTION: UPCOMING (admin only) ═══ -->
+  <div id="sec-upcoming" class="section admin-only" style="display:none">
+    <div class="section-head">
+      <div><h2>Upcoming Week</h2><p>Next 7 days forecast</p></div>
+    </div>
+    <div class="table-card" style="padding:24px">
+      <div class="section-head"><h2 style="font-size:1rem">Bookings per Day</h2></div>
+      <div class="upcoming-bars" id="upcomingBars">
+        {% set max_cnt = namespace(v=1) %}
+        {% for d_key, cnt in upcoming.items() %}{% if cnt > max_cnt.v %}{% set max_cnt.v = cnt %}{% endif %}{% endfor %}
+        {% for d_key, cnt in upcoming.items() %}
+        <div class="bar-wrap">
+          <div class="bar-val">{{ cnt }}</div>
+          <div class="bar" style="height:{{ [((cnt / max_cnt.v) * 68)|int, 4]|max }}px"></div>
+          <div class="bar-label">{{ d_key[5:] }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div><!-- /sec-upcoming -->
+  <!-- ═══ SECTION: FEEDBACK (admin only) ═══ -->
+  <div id="sec-feedback" class="section admin-only" style="display:none">
+    <div class="section-head">
+      <div><h2>Customer Feedback</h2><p>Ratings &amp; reviews from guests</p></div>
+      <button class="refresh-btn" onclick="loadFeedback()">&#x27F3; Refresh</button>
+    </div>
+
+    <!-- Summary row -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px">
+      <div class="stat-card" style="border-top:3px solid var(--gold)">
+        <div class="stat-label">Total Reviews</div>
+        <div class="stat-value" id="fb-total">—</div>
+        <div class="stat-icon">&#x1F4AC;</div>
+      </div>
+      <div class="stat-card" style="border-top:3px solid var(--green)">
+        <div class="stat-label">Average Rating</div>
+        <div class="stat-value" id="fb-avg">—</div>
+        <div class="stat-icon">&#x2B50;</div>
+      </div>
+      <div class="stat-card" style="border-top:3px solid var(--caramel)">
+        <div class="stat-label">5 Star Reviews</div>
+        <div class="stat-value" id="fb-5star">—</div>
+        <div class="stat-icon">&#x1F3C6;</div>
+      </div>
+      <div class="stat-card" style="border-top:3px solid var(--sage)">
+        <div class="stat-label">This Week</div>
+        <div class="stat-value" id="fb-week">—</div>
+        <div class="stat-icon">&#x1F4C5;</div>
+      </div>
+    </div>
+
+    <!-- Star distribution bar -->
+    <div class="table-card" style="padding:24px;margin-bottom:20px">
+      <div style="font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--coffee);opacity:.6;margin-bottom:16px">Rating Distribution</div>
+      <div id="fb-dist" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+
+    <!-- Reviews list -->
+    <div class="table-card">
+      <div style="padding:14px 20px;border-bottom:1px solid rgba(212,184,150,.12);display:flex;gap:10px;align-items:center">
+        <select id="fb-filter" class="filter-select" onchange="loadFeedback()">
+          <option value="">All Ratings</option>
+          <option value="5">5 Stars ⭐⭐⭐⭐⭐</option>
+          <option value="4">4 Stars ⭐⭐⭐⭐</option>
+          <option value="3">3 Stars ⭐⭐⭐</option>
+          <option value="2">2 Stars ⭐⭐</option>
+          <option value="1">1 Star ⭐</option>
+        </select>
+      </div>
+      <div id="fb-list" style="padding:16px">
+        <div style="text-align:center;padding:32px;color:var(--coffee);opacity:.4">Loading feedback…</div>
+      </div>
+    </div>
+  </div><!-- /sec-feedback -->
+
+
+</div><!-- /main -->
+
+<!-- DETAIL MODAL -->
+<div class="modal-bg" id="detailModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:20px;color:var(--espresso)">Reservation Detail</h2>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+var ROLE = "{{ role }}";
+var TODAY = "{{ today }}";
+
+/* ── SECTION SWITCHER ── */
+var sections = ["overview","today","all","upcoming","feedback"];
+function showSection(name) {
+    sections.forEach(function(s) {
+        document.getElementById("sec-"+s).style.display = "none";
+    });
+    document.getElementById("sec-"+name).style.display = "block";
+    document.querySelectorAll(".sb-link").forEach(function(l) { l.classList.remove("active"); });
+    event.currentTarget.classList.add("active");
+    if (name === "all") loadAllTable();
+    if (name === "today") loadDayTable();
+    if (name === "feedback") loadFeedback();
+}
+
+/* ── LIVE STATS REFRESH ── */
+function refreshStats() {
+    fetch("/api/stats")
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            document.getElementById("st-total").textContent     = d.total     || 0;
+            document.getElementById("st-confirmed").textContent = d.confirmed || 0;
+            document.getElementById("st-cancelled").textContent = d.cancelled || 0;
+            document.getElementById("st-today").textContent     = d.today     || 0;
+            var now = new Date();
+            document.getElementById("lastRefresh").textContent  =
+                now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true});
+        })
+        .catch(function(e) { console.error("Stats error:", e); });
+}
+setInterval(refreshStats, 8000);
+
+/* ── LOAD DAY TABLE ── */
+function loadDayTable() {
+    var dt = document.getElementById("dayPicker") ? document.getElementById("dayPicker").value : TODAY;
+    fetch("/api/reservations?date=" + dt)
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            var tbody = document.getElementById("dayTableBody");
+            if (!d.reservations || d.reservations.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="no-data">&#x2615; No bookings for ' + dt + '.</td></tr>';
+                return;
+            }
+            var adminCols = ROLE === "admin";
+            tbody.innerHTML = d.reservations.map(function(r) {
+                var act = adminCols ? (r.status === "Confirmed"
+                    ? '<td><div class="action-btns"><button class="act-btn cancel" onclick="cancelRes(\''+ r.ref +'\',true)">Cancel</button></div></td>'
+                    : '<td><div class="action-btns"><button class="act-btn confirm" onclick="confirmRes(\''+ r.ref +'\',true)">Restore</button></div></td>') : "";
+                return '<tr id="day-'+ r.ref +'"><td><span class="ref-tag">'+ r.ref +'</span></td><td><strong>'+ r.name +'</strong></td><td>'+ r.time +'</td><td>'+ r.guests +'</td><td style="font-size:.78rem;opacity:.7">'+ (r.special_req||"—") +'</td><td><span class="badge '+ r.status.toLowerCase() +'">'+ r.status +'</span></td>' + act + '</tr>';
+            }).join("");
+        })
+        .catch(function(e) { console.error(e); });
+}
+
+/* ── LOAD ALL TABLE ── */
+function loadAllTable() {
+    var st = document.getElementById("statusFilter").value;
+    var dt = document.getElementById("allDateFilter").value;
+    var url = "/api/reservations?";
+    if (st) url += "status=" + st + "&";
+    if (dt) url += "date=" + dt + "&";
+    fetch(url)
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            var tbody = document.getElementById("allTableBody");
+            if (!d.reservations || d.reservations.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="no-data">No reservations found.</td></tr>';
+                return;
+            }
+            var adminCols = ROLE === "admin";
+            tbody.innerHTML = d.reservations.map(function(r) {
+                var act = adminCols ? '<td><div class="action-btns"><button class="act-btn view" onclick="viewRes(\''+ r.ref +'\')">View</button>' +
+                    (r.status === "Confirmed"
+                        ? '<button class="act-btn cancel" onclick="cancelRes(\''+ r.ref +'\')">Cancel</button>'
+                        : '<button class="act-btn confirm" onclick="confirmRes(\''+ r.ref +'\')">Restore</button>') +
+                    '</div></td>' : "";
+                return '<tr id="row-'+ r.ref +'"><td><span class="ref-tag">'+ r.ref +'</span></td><td><strong>'+ r.name +'</strong></td><td style="font-size:.78rem">'+ (r.email||r.phone||"—") +'</td><td>'+ r.date +'</td><td>'+ r.time +'</td><td>'+ r.guests +'</td><td><span class="badge '+ r.status.toLowerCase() +'">'+ r.status +'</span></td>' + act + '</tr>';
+            }).join("");
+            allData = d.reservations;
+        })
+        .catch(function(e) { console.error(e); });
+}
+var allData = [];
+
+/* ── SEARCH FILTER ── */
+function filterTable() {
+    var q = document.getElementById("searchInput").value.toLowerCase();
+    if (!q) { loadAllTable(); return; }
+    var filtered = allData.filter(function(r) {
+        return (r.name||"").toLowerCase().includes(q) || (r.ref||"").toLowerCase().includes(q) || (r.email||"").toLowerCase().includes(q) || (r.phone||"").toLowerCase().includes(q);
+    });
+    var tbody = document.getElementById("allTableBody");
+    if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="8" class="no-data">No matches found.</td></tr>'; return; }
+    var adminCols = ROLE === "admin";
+    tbody.innerHTML = filtered.map(function(r) {
+        var act = adminCols ? '<td><div class="action-btns"><button class="act-btn view" onclick="viewRes(\''+ r.ref +'\')">View</button></div></td>' : "";
+        return '<tr><td><span class="ref-tag">'+ r.ref +'</span></td><td><strong>'+ r.name +'</strong></td><td style="font-size:.78rem">'+ (r.email||r.phone||"—") +'</td><td>'+ r.date +'</td><td>'+ r.time +'</td><td>'+ r.guests +'</td><td><span class="badge '+ r.status.toLowerCase() +'">'+ r.status +'</span></td>' + act + '</tr>';
+    }).join("");
+}
+
+/* ── ACTIONS (admin only) ── */
+function cancelRes(ref, reloadDay) {
+    if (!confirm("Cancel reservation " + ref + "?")) return;
+    fetch("/api/cancel/" + ref, {method:"POST"})
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            if (d.success) {
+                showToast("&#x2705; " + ref + " cancelled.");
+                if (reloadDay) loadDayTable(); else loadAllTable();
+                refreshStats();
+            } else { showToast("&#x26A0;&#xFE0F; Could not cancel."); }
+        });
+}
+function confirmRes(ref, reloadDay) {
+    fetch("/api/confirm/" + ref, {method:"POST"})
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            if (d.success) {
+                showToast("&#x2705; " + ref + " restored.");
+                if (reloadDay) loadDayTable(); else loadAllTable();
+                refreshStats();
+            } else { showToast("&#x26A0;&#xFE0F; Could not restore."); }
+        });
+}
+
+/* ── VIEW DETAIL ── */
+function viewRes(ref) {
+    fetch("/api/reservation/" + ref)
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            if (!d.success) { showToast("&#x26A0;&#xFE0F; Not found."); return; }
+            var r = d.reservation;
+            var rows = [
+                ["Reference", '<span class="ref-tag">'+ r.ref +'</span>'],
+                ["Name", r.name], ["Email", r.email||"—"], ["Phone", r.phone||"—"],
+                ["Date", r.date], ["Time", r.time], ["Guests", r.guests],
+                ["Special", r.special_req||"None"],
+                ["Status", '<span class="badge '+ r.status.toLowerCase() +'">'+ r.status +'</span>'],
+                ["Booked At", r.created_at||"—"]
+            ].map(function(pair) {
+                return '<div class="detail-row"><span class="key">'+ pair[0] +'</span><span class="val">'+ pair[1] +'</span></div>';
+            }).join("");
+            document.getElementById("modalContent").innerHTML = rows;
+            document.getElementById("detailModal").classList.add("open");
+        });
+}
+function closeModal() { document.getElementById("detailModal").classList.remove("open"); }
+document.getElementById("detailModal").addEventListener("click", function(e) { if (e.target === e.currentTarget) closeModal(); });
+
+/* ── EXPORT CSV ── */
+function exportCSV() {
+    fetch("/api/reservations")
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            if (!d.reservations) return;
+            var header = ["Ref","Name","Phone","Email","Date","Time","Guests","Special","Status","Created"];
+            var rows = d.reservations.map(function(r) {
+                return [r.ref,r.name,r.phone||"",r.email||"",r.date,r.time,r.guests,r.special_req||"",r.status,r.created_at||""].map(function(v) { return '"' + String(v).replace(/"/g,'\\"') + '"'; }).join(",");
+            });
+            var csv = [header.join(",")].concat(rows).join("\n");
+            var blob = new Blob([csv], {type:"text/csv"});
+            var a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+            a.download = "aroma_reservations_" + TODAY + ".csv"; a.click();
+            showToast("&#x1F4E5; CSV exported!");
+        });
+}
+
+/* ── TOAST ── */
+function showToast(msg) {
+    var t = document.getElementById("toast");
+    t.innerHTML = msg; t.classList.add("show");
+    setTimeout(function() { t.classList.remove("show"); }, 3000);
+}
+
+/* ── TOGGLE FEATURE ── */
+function toggleFeature(id, val) {
+    fetch("/api/feedback/feature/" + id, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({action: val ? "feature" : "unfeature"})
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+        if (d.success) {
+            showToast(val ? "★ Added to website testimonials!" : "Removed from testimonials.");
+            loadFeedback(); // reload to reflect change
+        } else {
+            showToast("⚠️ Could not update.");
+        }
+    })
+    .catch(function(){ showToast("⚠️ Server error."); });
+}
+
+/* init */
+refreshStats();
+
+/* ── FEEDBACK ── */
+function loadFeedback() {
+    fetch("/api/feedback/all")
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            if (!d.success) return;
+            var list = d.feedback || [];
+            var filter = document.getElementById("fb-filter").value;
+            if (filter) list = list.filter(function(f){ return f.rating == filter; });
+
+            // Summary stats
+            document.getElementById("fb-total").textContent = d.count || 0;
+            document.getElementById("fb-avg").textContent   = d.average_rating ? d.average_rating + " ★" : "—";
+            var five = (d.feedback||[]).filter(function(f){return f.rating===5;}).length;
+            document.getElementById("fb-5star").textContent = five;
+            var weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate()-7);
+            var wk = (d.feedback||[]).filter(function(f){return new Date(f.created_at) >= weekAgo;}).length;
+            document.getElementById("fb-week").textContent = wk;
+
+            // Distribution bars
+            var dist = {5:0,4:0,3:0,2:0,1:0};
+            (d.feedback||[]).forEach(function(f){ if(dist[f.rating]!==undefined) dist[f.rating]++; });
+            var maxD = Math.max.apply(null,Object.values(dist)) || 1;
+            var distHTML = [5,4,3,2,1].map(function(star){
+                var cnt = dist[star]; var pct = Math.round((cnt/maxD)*100);
+                return '<div style="display:flex;align-items:center;gap:12px">' +
+                    '<span style="font-size:.8rem;color:var(--gold);width:28px;text-align:right;font-weight:600">'+star+'★</span>' +
+                    '<div style="flex:1;background:rgba(212,184,150,.15);border-radius:4px;height:10px">' +
+                    '<div style="background:var(--gold);height:100%;border-radius:4px;width:'+pct+'%;transition:width .6s ease"></div></div>' +
+                    '<span style="font-size:.78rem;color:var(--coffee);opacity:.6;width:24px">'+cnt+'</span></div>';
+            }).join("");
+            document.getElementById("fb-dist").innerHTML = distHTML;
+
+            // Review cards
+            if (!list.length) {
+                document.getElementById("fb-list").innerHTML = '<div style="text-align:center;padding:32px;color:var(--coffee);opacity:.4">No feedback found.</div>';
+                return;
+            }
+            document.getElementById("fb-list").innerHTML = list.map(function(f){
+                var stars = "";
+                for(var i=1;i<=5;i++) stars += '<span style="color:'+(i<=f.rating?"var(--gold)":"rgba(44,26,14,.2)")+'">★</span>';
+                var isFeat = f.featured == 1;
+                var featBtn = '<button onclick="toggleFeature('+f.id+','+(isFeat?0:1)+')" '+
+                    'style="padding:5px 14px;border:none;border-radius:6px;font-size:.74rem;cursor:pointer;'+
+                    'font-family:inherit;font-weight:600;transition:all .2s;'+
+                    (isFeat ? 'background:var(--gold);color:var(--dark)"' : 'background:rgba(212,184,150,.15);color:var(--coffee)"')+'>'+
+                    (isFeat ? '★ Featured' : '☆ Add to Website')+'</button>';
+                var featBadge = isFeat
+                    ? '<div style="font-size:.7rem;color:var(--sage);margin-top:6px;display:flex;align-items:center;gap:4px">'+
+                      '<span>✅</span> Showing on website</div>'
+                    : '';
+                return '<div id="fb-card-'+f.id+'" style="padding:20px 0;border-bottom:1px solid rgba(212,184,150,.1)">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">' +
+                    '<div><strong style="font-size:.92rem;color:var(--espresso)">'+f.name+'</strong>' +
+                    (f.email?'<span style="font-size:.74rem;color:var(--coffee);opacity:.5;margin-left:8px">'+f.email+'</span>':'')+
+                    '<div style="margin-top:4px"><span style="font-size:1rem">'+stars+'</span></div></div>' +
+                    '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'+
+                    '<span style="font-size:.7rem;color:var(--coffee);opacity:.4">'+((f.created_at||"").split(" ")[0])+'</span>'+
+                    featBtn+'</div></div>' +
+                    '<p style="font-size:.86rem;color:var(--coffee);line-height:1.65;opacity:.85;margin-bottom:6px">'+f.message+'</p>'+
+                    featBadge+'</div>';
+            }).join("");
+        })
+        .catch(function(e){ console.error("Feedback load error:", e); });
+}
+
+</script>
+</body>
+</html>
