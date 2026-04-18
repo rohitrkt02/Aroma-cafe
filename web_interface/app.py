@@ -32,7 +32,10 @@ CORS(app)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-RASA_API_URL = "http://localhost:5005/webhooks/rest/webhook"
+# Rasa URL — only used when running locally (not on Render)
+# On Render, RASA_AVAILABLE=false so this line is never called
+RASA_API_URL     = os.environ.get("RASA_API_URL", "http://localhost:5005/webhooks/rest/webhook")
+RASA_AVAILABLE   = os.environ.get("RASA_AVAILABLE", "true").lower() == "true"
 BASE_DIR     = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH      = os.path.join(BASE_DIR, "database", "aroma.db")
 
@@ -341,14 +344,18 @@ def chat():
     msg  = data.get("message", "").strip()
     sid  = data.get("sender", "user")
     if not msg:
-        return jsonify([{"text": "Please type a message. ☕"}])
+        return jsonify([{"text": "Please type a message. \u2615"}])
+    # On Render (RASA_AVAILABLE=false), return empty so frontend uses local smart reply + Gemini
+    if not RASA_AVAILABLE:
+        return jsonify([])
+    # Local: forward to Rasa NLU server
     try:
         r = http_requests.post(RASA_API_URL, json={"sender": sid, "message": msg}, timeout=8)
         replies = r.json()
-        return jsonify(replies) if replies else jsonify([{"text": "I\'m not sure. Ask about menu, bookings, or hours. ☕"}])
+        return jsonify(replies) if replies else jsonify([])
     except Exception as e:
         logger.error(f"Rasa error: {e}")
-        return jsonify([{"text": "Having trouble. Call +91 98765 43210 or email hello@aromaandco.in."}])
+        return jsonify([])   # frontend falls back to getSmartReply() automatically
 
 @app.route("/api/reserve", methods=["POST"])
 def reserve_table():
@@ -555,6 +562,8 @@ if __name__ == "__main__":
     print("\n" + "="*58)
     print("  ☕  Aroma & Co. — Unified Server  (port 8000)")
     print("="*58)
+    mode = "Render (Gemini mode)" if not RASA_AVAILABLE else "Local (Rasa + Gemini)"
+    print(f"  Mode      → {mode}")
     print("  Website   → http://localhost:8000")
     print("  Login     → http://localhost:8000/login")
     print("  Tracker   → http://localhost:8000/track")
@@ -565,4 +574,6 @@ if __name__ == "__main__":
     print("    staff   / staff123   (Staff — read only)")
     print("    manager / manager123 (Manager — full access)")
     print("="*58 + "\n")
-    app.run(debug=True, port=8000)
+    port  = int(os.environ.get("PORT", 8000))
+    debug = os.environ.get("FLASK_DEBUG", "true").lower() == "true"
+    app.run(debug=debug, host="0.0.0.0", port=port)

@@ -83,3 +83,50 @@ Thumbs.db
 *.log
 logs/
 .babel.json
+
+
+
+# Virtual environment - never push (500MB+)
+venv/
+.venv/
+env/
+
+# Rasa trained model - very large (100MB+)
+models/
+
+# Database - contains personal data
+database/aroma.db
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+*.egg-info/
+
+# Rasa cache and checkpoints
+.rasa/
+checkpoints/
+
+# Environment secrets - NEVER push API keys
+.env
+*.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+
+# Logs
+*.log
+logs/
+
+# Jupyter
+.ipynb_checkpoints/

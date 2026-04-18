@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: aroma-cafe-chatbot
+    runtime: python
+    buildCommand: pip install -r requirements.txt && python database/setup_db.py
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 "web_interface.app:app"
+    envVars:
+      - key: RASA_AVAILABLE
+        value: "false"
+      - key: FLASK_DEBUG
+        value: "false"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: CAFE_EMAIL
+        sync: false
+      - key: CAFE_EMAIL_PASSWORD
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
